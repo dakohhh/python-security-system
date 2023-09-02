@@ -1,5 +1,7 @@
 {
     "cSpell.words": [
-        "imread"
+        "imread",
+        "imshow",
+        "imutils"
     ]
 }
