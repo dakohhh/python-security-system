@@ -4,8 +4,9 @@ import datetime
 import numpy as np
 import threading
 import face_recognition
-# from utils.video_func import adjust_text_size
-from model import get_model
+from model import get_model, get_class_dict
+from utils.video_func import adjust_text_size
+
 
 
 
@@ -14,14 +15,18 @@ class Camera():
     cap = cv2.VideoCapture(0)
     video_writer = None
 
+    FRAME_THICKNESS = 5
+
 
     def __init__(self):
         self.armed = False
         self.camera_thread = None
-        self.model = get_model(os.path.join(os.getcwd(), "tf_face_model.h5"))
+        self.class_list = get_class_dict(os.path.join(os.getcwd(), "models/class_dict.json"))
+        self.model = get_model(os.path.join(os.getcwd(), "models/tf_face_model.h5"))
 
     def arm(self):
-        # start camera thread
+
+        # Arm Camera and Initialize Camera Thread
         if not self.armed and not self.camera_thread:
 
             self.camera_thread = threading.Thread(target=self.run)
@@ -31,10 +36,12 @@ class Camera():
         self.armed = True
 
     def disarm(self):
+
+        # Disarm Camera and Initialize Camera Thread
         
         self.camera_thread = None
         self.armed = False
-        print("Camera is diarmed")
+        print("Camera is disarmed")
 
     def run(self):
 
@@ -71,6 +78,7 @@ class Camera():
                     top, right, bottom, left = face_location
 
                     cropped_face = frame[top:bottom, left:right]
+            
 
                     grayscale_image = cv2.cvtColor(cropped_face, cv2.COLOR_BGR2GRAY)
 
@@ -79,7 +87,17 @@ class Camera():
 
                     prediction = self.model.predict(np.array([scaled_cropped_grayscale_image]))
 
-                    print(prediction)
+                    FRAME_THICKNESS = 5
+
+                    color = (0, 200, 0)
+
+                    match_id =  self.class_list[np.argmax(prediction)]
+                    
+                    cv2.rectangle(frame, (left, top), (right, bottom), color, FRAME_THICKNESS)
+                    
+                    adjust_text_size(frame, match_id, face_location)
+
+                    # firstname, lastname, is_blacklisted = next(((user.firstname, user.lastname, user.is_blacklisted) for user in all_users if str(user.id) == match_id), None)
 
 
                 if not recording:
@@ -87,11 +105,12 @@ class Camera():
                     recording = True
 
                     now = datetime.datetime.now()
+
                     today_date = now.strftime("%d-%m-%y-%H-%M-%S")
 
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
                 
-                    self.video_writer = cv2.VideoWriter(f'{today_date}.avi', fourcc, 5.0, (640, 480))
+                    self.video_writer = cv2.VideoWriter(f'{os.getcwd()}.mp4', fourcc, 5.0, (640, 480))
 
                 self.video_writer.write(frame)
 
@@ -111,33 +130,9 @@ class Camera():
 
                 self.video_writer = None
 
-
-
-
-
-                
-
-        
-
-                
-
-
-
             
-        
-
-    
-
-    
 
 
-camera = Camera()
-
-camera.arm()
-
-
-
-    
 
 
 

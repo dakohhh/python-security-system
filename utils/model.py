@@ -68,12 +68,14 @@ async def get_train_test_data(path:str) -> tuple:
 
 
 
-async def get_class_dict(path:str=os.path.join(os.getcwd(), "class_dict.json"))-> Union[dict, list]:
+def get_class_dict(path:str=None)-> Union[dict, list]:
 
     with open(path, "r") as json_file:
         class_dict = json.load(json_file)
 
     return class_dict
+
+
 
 
 async def train_evaluate_update(lenght_of_user:int, path:str, path_to_save_model:str=os.path.join(os.getcwd(), "tf_face_model.h5")):
