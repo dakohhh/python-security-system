@@ -10,7 +10,7 @@ from database.schema import Users
 from utils.validate import get_object_id, verify_image
 from exceptions.custom_execption import BadRequestException, NotFoundException
 from models.model import CreateUser
-from utils.file_func import save_image_file_to_user
+from utils.file import save_image_file_to_user
 from utils.model_func import train_evaluate_update, get_class_dict
 from response.response import CustomResponse
 

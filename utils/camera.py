@@ -5,7 +5,7 @@ import numpy as np
 import threading
 import face_recognition
 from model import get_model, get_class_dict
-from utils.video_func import adjust_text_size
+from video_func import adjust_text_size
 
 
 
@@ -110,7 +110,7 @@ class Camera():
 
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
                 
-                    self.video_writer = cv2.VideoWriter(f'{os.getcwd()}.mp4', fourcc, 5.0, (640, 480))
+                    self.video_writer = cv2.VideoWriter(os.path.join(os.getcwd(), f"models/{today_date}.avi"), fourcc, 5.0, (640, 480))
 
                 self.video_writer.write(frame)
 
@@ -132,7 +132,10 @@ class Camera():
 
             
 
+camera = Camera()
 
+
+camera.arm()
 
 
 
