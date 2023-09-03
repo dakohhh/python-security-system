@@ -11,7 +11,7 @@ from utils.validate import get_object_id, verify_image
 from exceptions.custom_execption import BadRequestException, NotFoundException
 from models.model import CreateUser
 from utils.file import save_image_file_to_user
-from utils.model_func import train_evaluate_update, get_class_dict
+from utils.model import train_evaluate_update, get_class_dict
 from response.response import CustomResponse
 
 
@@ -125,19 +125,6 @@ async def add_image(user_id:str =Form(...), image:UploadFile = File(...)):
 
     save_image_file_to_user(cropped_image, file_path_for_user)           
 
-    return CustomResponse("Added Image To User Successfuly")
+    return CustomResponse("Added Image To User Successfully")
 
 
-
-@router.post("/train-data")
-async def train(request:Request):
-
-    loss, accuracy = await train_evaluate_update(3, "static/model_data")
-
-    print(loss)
-
-    print(accuracy)
-
-    data = {"accuracy": accuracy, "loss": loss}
-
-    return CustomResponse("Model Trained Successfuly", data=data)

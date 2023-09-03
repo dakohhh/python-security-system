@@ -1,11 +1,12 @@
 import os
 import cv2
+import asyncio
 import datetime
-import numpy as np
 import threading
+import numpy as np
 import face_recognition
 from model import get_model, get_class_dict
-from video_func import adjust_text_size
+from video import adjust_text_size
 
 
 
@@ -115,9 +116,9 @@ class Camera():
                 self.video_writer.write(frame)
 
             else:
-                none_detected_counter += 1
+                none_detected_counter += 1    # Increment the counter
 
-                if recording and none_detected_counter >= 50:
+                if recording and none_detected_counter >= 50:    # If after 50 frames the person is not detected, stop recording
 
                     recording = False
                     self.video_writer.release()
@@ -141,63 +142,3 @@ camera.arm()
 
 
 
-
-
-
-# async def detect_faces(all_users):
-
-#     global model
-
-#     global class_list
-
-#     model = await model
-
-#     class_list = await class_list
-
-#     FRAME_THICKNESS = 5
-
-#     camera = cv2.VideoCapture(0)
-
-#     while True:
-#         success, frame = camera.read()
-
-#         if not success:
-#             break
-
-#         locations = face_recognition.face_locations(frame)
-    
-#         for face_location in locations:
-
-#             top, right, bottom, left = face_location
-
-#             cropped_face = frame[top:bottom, left:right]
-
-
-#             grayscale_image = cv2.cvtColor(cropped_face, cv2.COLOR_BGR2GRAY)
-
-
-#             scaled_cropped_grayscale_image = cv2.resize(grayscale_image, (40, 40))
-
-#             prediction = model.predict(np.array([scaled_cropped_grayscale_image]))
-
-#             match_id =  class_list[np.argmax(prediction)]
-
-#             firstname, lastname, is_blacklisted = next(((user.firstname, user.lastname, user.is_blacklisted) for user in all_users if str(user.id) == match_id), None)
-
-#             match = f"{firstname} {lastname}"
-
-#             color = [0, 255, 0]
-
-#             cv2.rectangle(frame, (left, top), (right, bottom), color, FRAME_THICKNESS)
-
-#             adjust_text_size(frame, match, face_location, IS_KNOWN)
-
-
-
-#         ret, buffer = cv2.imencode('.jpg', frame)
-#         frame = buffer.tobytes()
-
-#         yield (b'--frame\r\n'
-#                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-#     camera.release()
