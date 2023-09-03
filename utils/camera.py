@@ -7,6 +7,7 @@ import numpy as np
 import face_recognition
 from model import get_model, get_class_dict
 from video import adjust_text_size
+from storage import handle_upload
 
 
 
@@ -110,19 +111,23 @@ class Camera():
                     today_date = now.strftime("%d-%m-%y-%H-%M-%S")
 
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
+
+                    recording_path = os.path.join(os.getcwd(), f"models/{today_date}.avi")
                 
-                    self.video_writer = cv2.VideoWriter(os.path.join(os.getcwd(), f"models/{today_date}.avi"), fourcc, 5.0, (640, 480))
+                    self.video_writer = cv2.VideoWriter(recording_path, fourcc, 5.0, (640, 480))
 
                 self.video_writer.write(frame)
 
             else:
                 none_detected_counter += 1    # Increment the counter
 
-                if recording and none_detected_counter >= 50:    # If after 50 frames the person is not detected, stop recording
+                if recording and none_detected_counter >= 50:    # If after 50 frames the person is not detected, stop recording and release the video write
 
                     recording = False
                     self.video_writer.release()
                     self.video_writer = None
+
+                    asyncio.create_task(handle_upload(recording_path, "user"))
                 
 
         if self.video_writer is not None:
