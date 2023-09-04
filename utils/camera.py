@@ -107,8 +107,8 @@ class Camera():
                     recording = True
 
                     now = datetime.datetime.now()
-
-                    today_date = now.strftime("%d-%m-%y-%H-%M-%S")
+                    
+                    today_date = now.strftime("%Y-%m-%d")
 
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
 
@@ -127,7 +127,11 @@ class Camera():
                     self.video_writer.release()
                     self.video_writer = None
 
-                    asyncio.create_task(handle_upload(recording_path, "user"))
+
+                    upload_thread = threading.Thread(target=handle_upload, args=(today_date, recording_path, "user"))
+
+                    upload_thread.start()
+
                 
 
         if self.video_writer is not None:

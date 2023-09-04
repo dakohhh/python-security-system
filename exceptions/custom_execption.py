@@ -4,11 +4,11 @@ from fastapi.responses import JSONResponse
 
 
 
-class UserExistExecption(Exception):
+class UserExistException(Exception):
     def __init__(self, msg: str):
         self.msg = msg   
 
-async def user_exist_exception_handler(request: Request, exception: UserExistExecption):
+async def user_exist_exception_handler(request: Request, exception: UserExistException):
     return JSONResponse(
         status_code=status.HTTP_409_CONFLICT,
         content={
@@ -18,11 +18,11 @@ async def user_exist_exception_handler(request: Request, exception: UserExistExe
         },
     )
 
-class UnauthorizedExecption(Exception):
+class UnauthorizedException(Exception):
     def __init__(self, msg: str):
         self.msg = msg   
 
-async def unauthorized_exception_handler(request: Request, exception: UnauthorizedExecption):
+async def unauthorized_exception_handler(request: Request, exception: UnauthorizedException):
     return JSONResponse(
         status_code=status.HTTP_401_UNAUTHORIZED,
         content={

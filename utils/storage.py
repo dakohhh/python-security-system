@@ -1,5 +1,7 @@
 import os
 import asyncio
+import requests
+import threading 
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
@@ -22,8 +24,10 @@ cloudinary.config(
 
 
 
-def handle_upload(name, current_recording_path:str, user):
 
+def handle_upload(name, current_recording_path:str, user={"email": "wisdomdakoh@gmail.com"}):
+
+    print(user)
 
     metadata = cloudinary.uploader.upload_large(current_recording_path, 
         resource_type = "video",
@@ -37,7 +41,10 @@ def handle_upload(name, current_recording_path:str, user):
     )
 
 
-    print(metadata)
+    print(metadata["url"])
+
+
+    
 
 
 

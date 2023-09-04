@@ -19,3 +19,13 @@ class CreateUser(BaseModel):
     firstname:str
     lastname:str
     matric_no:int
+
+
+
+class NotifySchema(BaseModel):
+    user_id: str
+    camera:str 
+    link:str
+    detected_user:str 
+    time_of_detection:str
+
