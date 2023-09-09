@@ -5,6 +5,7 @@ import threading
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from database.schema import 
 from dotenv import load_dotenv
 
 load_dotenv()

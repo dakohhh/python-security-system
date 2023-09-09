@@ -1,6 +1,6 @@
 from fastapi import Request, APIRouter, BackgroundTasks
 from fastapi.templating import Jinja2Templates
-from models.model import NotifySchema
+from validation.model import NotifySchema
 from response.response import CustomResponse
 from utils.notifications import notify_user_by_email
 
@@ -23,7 +23,7 @@ async def notify_user(request:Request, notify:NotifySchema, background_task:Back
     background_task.add_task(notify_user_by_email, user, notify.camera, notify.link, notify.detected_user, notify.time_of_detection)
     
 
-    return CustomResponse("Yeah Works")
+    return CustomResponse("Notified user successfully")
 
 
 

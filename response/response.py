@@ -1,6 +1,4 @@
-from fastapi.responses import JSONResponse, RedirectResponse
-from fastapi import Request
-
+from fastapi.responses import JSONResponse
 
 
 
@@ -9,11 +7,11 @@ from fastapi import Request
 
 
 class CustomResponse(JSONResponse):
-    def __init__(self, msg, status=200, success=True, data=None) -> None:
+    def __init__(self, msg:str, status:int=200, success=True, data=None) -> None:
 
         response = {
         "status":status,
-        "msg": msg,
+        "message": msg,
         "success": success,
         "data": data 
         }

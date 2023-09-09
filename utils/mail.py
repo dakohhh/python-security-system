@@ -18,7 +18,7 @@ conf = ConnectionConfig(
     USE_CREDENTIALS= True, 
     VALIDATE_CERTS = True,
     MAIL_STARTTLS = False,
-    MAIL_SSL_TLS = False,
+    MAIL_SSL_TLS = True,
 
 )
 
@@ -30,7 +30,7 @@ conf = ConnectionConfig(
 def get_notify_message_schema(user, camera, link, detected_user, time_of_detection):
 
     html = f"""
-    <p>Hello {user["firstname"] + " " + user["lastname"]}, we have noticed some suspicious detections from camera {camera}</p> 
+    <p>Hello {user["firstname"]}, we have noticed some suspicious detections from camera {camera}</p> 
     <p>Details Of Detections</p>
     ============================
     <br>
