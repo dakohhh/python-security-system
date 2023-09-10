@@ -23,7 +23,6 @@ class CreateUser(BaseModel):
 
 
 class NotifySchema(BaseModel):
-    user_id: str
     camera:str 
     link:str
     detected_user:str 

@@ -6,6 +6,8 @@ from routers.user import router as user
 from exceptions.custom_execption import *
 from dotenv import load_dotenv
 
+from utils.camera import Camera
+
 
 
 load_dotenv()
@@ -32,6 +34,12 @@ app.add_exception_handler(NotFoundException, not_found)
 app.add_exception_handler(CredentialsException, credentail_exception_handler)
 app.add_exception_handler(BadRequestException, bad_request_exception_handler)
 
+
+
+
+camera = Camera()
+
+camera.arm()
 
 
 

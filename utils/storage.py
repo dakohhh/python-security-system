@@ -1,4 +1,5 @@
 import os
+import json
 import asyncio
 import requests
 import threading 
@@ -27,12 +28,12 @@ cloudinary.config(
 
 
 
-def handle_upload(name, current_recording_path:str, user):
+def handle_upload(recording_name, current_recording_path:str, camera, detected_user, time_of_detection):
       
 
 	metadata = cloudinary.uploader.upload_large(current_recording_path, 
 		resource_type = "video",
-		public_id = f"python_security/{name}",
+		public_id = f"python_security/{recording_name}",
 		chunk_size = 6000000,
 		eager = [
 			{ "width": 300, "height": 300, "crop": "pad", "audio_codec": "none"},
@@ -42,7 +43,12 @@ def handle_upload(name, current_recording_path:str, user):
 	)
 
 	if metadata:
-		save_metadata_to_database(name, metadata["url"])
+		save_metadata_to_database(recording_name, metadata["url"])
+
+
+		notify_request(camera, metadata["url"], detected_user, time_of_detection)
+
+
 
 		os.remove(current_recording_path)
 	
@@ -51,16 +57,32 @@ def handle_upload(name, current_recording_path:str, user):
 
 
 
-def save_metadata_to_database(name:str, url:str):
+def save_metadata_to_database(recording_name:str, url:str):
 
-    recording = Recordings(name=name, url=url)
+    recording = Recordings(name=recording_name, url=url)
 
     recording.save()
 
 
 
-def notify_request():
+def notify_request(camera:int, url:str, detected_user:str, time_of_detection:str):
 
-	
+	url = "http://127.0.0.1:8000/user/notify"
+
+
+	payload = json.dumps({
+		"camera": camera,
+		"link": url,
+		"detected_user": detected_user,
+		"time_of_detection": time_of_detection
+	})
+
+
+	response = requests.request("POST", url, data=payload)
+
+
+
+
+
 
 

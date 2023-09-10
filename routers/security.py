@@ -9,9 +9,5 @@ templates = Jinja2Templates(directory="templates")
 
 
 
-camera = Camera()
-
-camera.arm()
-
 
 

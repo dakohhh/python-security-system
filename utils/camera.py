@@ -5,7 +5,7 @@ import datetime
 import threading
 import numpy as np
 import face_recognition
-from model import get_model, get_class_dict
+from .model import get_model, get_class_dict
 from video import adjust_text_size
 from storage import handle_upload
 
@@ -23,6 +23,7 @@ class Camera():
     def __init__(self):
         self.armed = False
         self.camera_thread = None
+        self.camera_loc = 0
         self.class_list = get_class_dict(os.path.join(os.getcwd(), "models/class_dict.json"))
         self.model = get_model(os.path.join(os.getcwd(), "models/tf_face_model.h5"))
 
@@ -108,11 +109,13 @@ class Camera():
 
                     now = datetime.datetime.now()
                     
-                    today_date = now.strftime("%Y-%m-%d__%H-%M-%S")
+                    recording_name = now.strftime("%Y-%m-%d__%H-%M-%S")
+
+                    time_of_detection = now.strftime("%Y-%m-%d %I:%M%p")
 
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
 
-                    recording_path = os.path.join(os.getcwd(), f"models/{today_date}.avi")
+                    recording_path = os.path.join(os.getcwd(), f"models/{recording_name}.avi")
                 
                     self.video_writer = cv2.VideoWriter(recording_path, fourcc, 5.0, (640, 480))
 
@@ -128,7 +131,15 @@ class Camera():
                     self.video_writer = None
 
 
-                    upload_thread = threading.Thread(target=handle_upload, args=(today_date, recording_path, {"email": "wisdomdakoh@gmail.com"}))
+                    upload_thread = threading.Thread(target=handle_upload, 
+                        args=(
+                            recording_name, 
+                            recording_path, 
+                            self.camera_loc, 
+                            "Wisdom Dakoh", 
+                            time_of_detection
+                        )
+                    )
 
                     upload_thread.start()
 
