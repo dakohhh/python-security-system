@@ -108,7 +108,7 @@ class Camera():
 
                     now = datetime.datetime.now()
                     
-                    today_date = now.strftime("%Y-%m-%d")
+                    today_date = now.strftime("%Y-%m-%d__%H-%M-%S")
 
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
 
@@ -128,7 +128,7 @@ class Camera():
                     self.video_writer = None
 
 
-                    upload_thread = threading.Thread(target=handle_upload, args=(today_date, recording_path, "user"))
+                    upload_thread = threading.Thread(target=handle_upload, args=(today_date, recording_path, {"email": "wisdomdakoh@gmail.com"}))
 
                     upload_thread.start()
 
@@ -142,10 +142,6 @@ class Camera():
 
             
 
-camera = Camera()
-
-
-camera.arm()
 
 
 

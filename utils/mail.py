@@ -27,10 +27,10 @@ conf = ConnectionConfig(
 
 
 
-def get_notify_message_schema(user, camera, link, detected_user, time_of_detection):
+def get_notify_message_schema(emails:list, camera, link, detected_user, time_of_detection):
 
     html = f"""
-    <p>Hello {user["firstname"]}, we have noticed some suspicious detections from camera {camera}</p> 
+    <p>Hello user, we have noticed some suspicious detections from camera {camera}</p> 
     <p>Details Of Detections</p>
     ============================
     <br>
@@ -45,7 +45,7 @@ def get_notify_message_schema(user, camera, link, detected_user, time_of_detecti
 
     return MessageSchema(
         subject="We have detected movements!",
-        recipients=[user["email"]],
+        recipients=emails,
         body=html,
         subtype=MessageType.html
     )

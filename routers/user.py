@@ -2,6 +2,8 @@ from fastapi import Request, APIRouter, BackgroundTasks
 from fastapi.templating import Jinja2Templates
 from validation.model import NotifySchema
 from response.response import CustomResponse
+from database.crud import fetchall_documents
+from database.schema import Users
 from utils.notifications import notify_user_by_email
 
 
@@ -18,9 +20,10 @@ templates = Jinja2Templates(directory="templates")
 async def notify_user(request:Request, notify:NotifySchema, background_task:BackgroundTasks):
 
 
-    user = {"firstname": "Wisdom", "lastname": "Dakoh",  "email": "wisdomdakoh@gmail.com"}
+    emails = [user.email for user in fetchall_documents(Users)]
 
-    background_task.add_task(notify_user_by_email, user, notify.camera, notify.link, notify.detected_user, notify.time_of_detection)
+
+    background_task.add_task(notify_user_by_email, emails, notify.camera, notify.link, notify.detected_user, notify.time_of_detection)
     
 
     return CustomResponse("Notified user successfully")

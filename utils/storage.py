@@ -2,10 +2,11 @@ import os
 import asyncio
 import requests
 import threading 
+from pprint import pprint
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-from database.schema import 
+from database.schema import Recordings
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -26,35 +27,40 @@ cloudinary.config(
 
 
 
-def handle_upload(name, current_recording_path:str, user={"email": "wisdomdakoh@gmail.com"}):
+def handle_upload(name, current_recording_path:str, user):
+      
 
-    print(user)
+	metadata = cloudinary.uploader.upload_large(current_recording_path, 
+		resource_type = "video",
+		public_id = f"python_security/{name}",
+		chunk_size = 6000000,
+		eager = [
+			{ "width": 300, "height": 300, "crop": "pad", "audio_codec": "none"},
+			{ "width": 160, "height": 100, "crop": "crop", "gravity": "south",
+				"audio_codec": "none"}],
+		eager_async = True,
+	)
 
-    metadata = cloudinary.uploader.upload_large(current_recording_path, 
-        resource_type = "video",
-        public_id = f"python_security/{name}",
-        chunk_size = 6000000,
-        eager = [
-            { "width": 300, "height": 300, "crop": "pad", "audio_codec": "none"},
-            { "width": 160, "height": 100, "crop": "crop", "gravity": "south",
-                "audio_codec": "none"}],
-        eager_async = True,
-    )
+	if metadata:
+		save_metadata_to_database(name, metadata["url"])
 
-
-    print(metadata["url"])
-
+		os.remove(current_recording_path)
+	
 
     
 
 
 
+def save_metadata_to_database(name:str, url:str):
+
+    recording = Recordings(name=name, url=url)
+
+    recording.save()
 
 
-async def save_metadata_to_database(metadata:dict, user):
 
-    pass
+def notify_request():
+
+	
 
 
-
-handle_upload("03-09-23-19-01-26", os.path.join(os.getcwd(), "models/03-09-23-19-01-26.avi"), "user")

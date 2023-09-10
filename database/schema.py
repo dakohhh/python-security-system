@@ -1,4 +1,4 @@
-from datatime import datetime
+from datetime import datetime
 from mongoengine import Document, StringField, IntField, BooleanField, EmailField, DateTimeField
 
 
@@ -9,12 +9,12 @@ class Users(Document):
 
     lastname = StringField(required=True, min_lenght=3, max_length=50)
 
-    email = EmailField()
+    email = EmailField(required=True)
 
     password = StringField(required=True)
 
     created_at = DateTimeField(default=datetime.now())
-    
+
     updated_at = DateTimeField(default=datetime.now())
 
     meta = {"collection": "users", "strict": False}
@@ -25,7 +25,9 @@ class Users(Document):
             "_id": str(self.id),
             "firstname": self.firstname,
             "lastname": self.lastname,
-            "email": self.email
+            "email": self.email, 
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
         }
 
 
@@ -41,6 +43,10 @@ class Students(Document):
 
     is_blacklisted = BooleanField(required=True, default=False)
 
+    created_at = DateTimeField(default=datetime.now())
+
+    updated_at = DateTimeField(default=datetime.now())
+
 
     meta = {"collection": "students", "strict": False}
 
@@ -51,7 +57,9 @@ class Students(Document):
             "firstname": self.firstname,
             "lastname": self.lastname,
             "matric_no": self.matric_no,
-            "is_blacklisted": self.is_blacklisted
+            "is_blacklisted": self.is_blacklisted,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
         }
     
 
@@ -59,15 +67,15 @@ class Students(Document):
 
 
 
-class Students(Document):
+class Recordings(Document):
 
-    firstname = StringField(required=True, min_lenght=3, max_length=50)
+    name = StringField(required=True, max_length=50)
 
-    lastname = StringField(required=True, min_lenght=3, max_length=50)
+    url = StringField(required=True)
 
-    matric_no = IntField(required=True, unique=True)
+    created_at = DateTimeField(default=datetime.now())
 
-    d = BooleanField(required=True, default=False)
+    updated_at = DateTimeField(default=datetime.now())
 
 
     meta = {"collection": "students", "strict": False}
@@ -76,10 +84,10 @@ class Students(Document):
     def to_dict(self) -> dict:
         return {
             "_id": str(self.id),
-            "firstname": self.firstname,
-            "lastname": self.lastname,
-            "matric_no": self.matric_no,
-            "is_blacklisted": self.is_blacklisted
+            "name": self.name,
+            "url": self.url,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
         }
 
 
