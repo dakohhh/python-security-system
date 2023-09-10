@@ -115,7 +115,7 @@ class Camera():
 
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
 
-                    recording_path = os.path.join(os.getcwd(), f"models/{recording_name}.avi")
+                    recording_path = os.path.join(os.getcwd(), f"videos/{recording_name}.avi")
                 
                     self.video_writer = cv2.VideoWriter(recording_path, fourcc, 5.0, (640, 480))
 
