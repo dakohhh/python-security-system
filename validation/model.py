@@ -1,8 +1,9 @@
 from typing import List, Union
 from fastapi import Form
-from pydantic import BaseModel, validator, Field
+from pydantic import BaseModel, validator
 from bson import ObjectId
-from exceptions.custom_execption import BadRequestException
+from email_validator import validate_email, EmailNotValidError
+from exceptions.custom_exception import BadRequestException
 
 
 class TokenData(BaseModel):
@@ -13,12 +14,27 @@ class TokenData(BaseModel):
 
 
 
-
-
 class CreateUser(BaseModel):
     firstname:str
     lastname:str
-    matric_no:int
+    email:str
+    password:str
+
+    @validator("email")
+    def validate_email(cls, v):
+        try:
+            emailinfo = validate_email(v, check_deliverability=True)
+
+            email = str(emailinfo.email)
+
+            return email
+
+        except EmailNotValidError as e:
+
+            raise BadRequestException(str(e))
+
+
+
 
 
 
@@ -27,4 +43,23 @@ class NotifySchema(BaseModel):
     link:str
     detected_user:str 
     time_of_detection:str
+
+
+
+class LoginSchema(BaseModel):
+    email:str
+    password:str
+
+    @validator("email")
+    def validate_email(cls, v):
+        try:
+            emailinfo = validate_email(v, check_deliverability=False)
+
+            email = str(emailinfo.email)
+
+            return email
+
+        except EmailNotValidError as e:
+
+            raise BadRequestException(str(e))
 

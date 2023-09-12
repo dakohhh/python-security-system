@@ -9,7 +9,7 @@ class Users(Document):
 
     lastname = StringField(required=True, min_lenght=3, max_length=50)
 
-    email = EmailField(required=True)
+    email = EmailField(required=True, unique=True)
 
     password = StringField(required=True)
 
@@ -26,8 +26,8 @@ class Users(Document):
             "firstname": self.firstname,
             "lastname": self.lastname,
             "email": self.email, 
-            "created_at": self.created_at,
-            "updated_at": self.updated_at
+            "created_at": str(self.created_at),
+            "updated_at": str(self.updated_at)
         }
 
 
@@ -58,8 +58,8 @@ class Students(Document):
             "lastname": self.lastname,
             "matric_no": self.matric_no,
             "is_blacklisted": self.is_blacklisted,
-            "created_at": self.created_at,
-            "updated_at": self.updated_at
+            "created_at": str(self.created_at),
+            "updated_at": str(self.updated_at)
         }
     
 
@@ -78,7 +78,7 @@ class Recordings(Document):
     updated_at = DateTimeField(default=datetime.now())
 
 
-    meta = {"collection": "students", "strict": False}
+    meta = {"collection": "recordings", "strict": False}
 
 
     def to_dict(self) -> dict:
@@ -86,8 +86,8 @@ class Recordings(Document):
             "_id": str(self.id),
             "name": self.name,
             "url": self.url,
-            "created_at": self.created_at,
-            "updated_at": self.updated_at
+            "created_at": str(self.created_at),
+            "updated_at": str(self.updated_at)
         }
 
 

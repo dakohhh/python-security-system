@@ -1,6 +1,6 @@
 from bson import ObjectId
 from PIL import Image
-from exceptions.custom_execption import BadRequestException
+from exceptions.custom_exception import BadRequestException
 
 
 

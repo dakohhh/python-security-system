@@ -1,6 +1,7 @@
-from fastapi import Request, APIRouter, BackgroundTasks
+from fastapi import Request, APIRouter, BackgroundTasks, status
 from fastapi.templating import Jinja2Templates
-from validation.model import NotifySchema
+from validation.model import NotifySchema, CreateUser
+from authentication.hashing import hashPassword
 from response.response import CustomResponse
 from database.crud import fetchall_documents
 from database.schema import Users
@@ -20,7 +21,7 @@ templates = Jinja2Templates(directory="templates")
 async def notify_user(request:Request, notify:NotifySchema, background_task:BackgroundTasks):
 
 
-    emails = [user.email for user in fetchall_documents(Users)]
+    emails = [user.email for user in await fetchall_documents(Users)]
 
 
     background_task.add_task(notify_user_by_email, emails, notify.camera, notify.link, notify.detected_user, notify.time_of_detection)
@@ -66,7 +67,7 @@ async def notify_user(request:Request, notify:NotifySchema, background_task:Back
 # @router.post("/")
 # async def add_user(request:Request, user:CreateUser):
 
-#     new_user = Users(firstname=user.firstname, lastname=user.lastname, matric_no=user.matric_no)
+#     new_user = Users(firstname=user.firstname, lastname=user.lastname, email=user.email, password=hashPassword(user.password))
 
 #     new_user.save()
 
