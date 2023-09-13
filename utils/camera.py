@@ -29,6 +29,8 @@ class Camera():
         self.class_list = get_class_dict(os.path.join(os.getcwd(), "models/class_dict.json"))
         self.model = get_model(os.path.join(os.getcwd(), "models/tf_face_model.h5"))
 
+        print("Camera has started...")
+
     def arm(self):
 
         # Arm Camera and Initialize Camera Thread
@@ -58,7 +60,7 @@ class Camera():
         recording = False
 
         if self.armed:
-            print("Camera has Started...")
+            print("Camera is armed")
 
         while self.armed:
 
@@ -113,7 +115,9 @@ class Camera():
                     
                     recording_name = now.strftime("%Y-%m-%d__%H-%M-%S")
 
-                    time_of_detection = now.strftime("%Y-%m-%d %I:%M%p")
+                    # time_of_detection = now.strftime("%Y-%m-%d %I:%M%p")
+
+                    time_of_detection = now
 
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
 

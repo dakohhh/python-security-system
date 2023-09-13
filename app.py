@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from mongoengine import connect
 from routers.user import router as user
 from routers.auth import router as auth
+from response.response import CustomResponse 
 from exceptions.custom_exception import *
 from dotenv import load_dotenv
 
@@ -37,13 +38,30 @@ app.add_exception_handler(BadRequestException, bad_request_exception_handler)
 
 
 
-# camera = Camera()
+camera = Camera()
 
-# camera.arm()
-
-
+camera.arm()
 
 
+
+
+@app.patch("/security/arm")
+def arm_camera(request:Request):
+
+    camera.arm()
+
+    return CustomResponse("Camera is Armed")
+
+
+
+
+
+@app.patch("/security/disarm")
+def arm_camera(request:Request):
+
+    camera.disarm()
+
+    return CustomResponse("Camera is Disarmed")
 
 
 

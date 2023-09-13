@@ -73,6 +73,8 @@ class Recordings(Document):
 
     url = StringField(required=True)
 
+    time_of_detection = DateTimeField(required=True)
+
     created_at = DateTimeField(default=datetime.now())
 
     updated_at = DateTimeField(default=datetime.now())
