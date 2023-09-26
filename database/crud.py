@@ -1,14 +1,14 @@
 from typing import List, Type, Union
 from mongoengine import Document
 from mongoengine.errors import MongoEngineException
-from .schema import Users
+from .schema import Users, Students
 from exceptions.custom_exception import ServerErrorException, BadRequestException
 
 
 
 
 
-async def fetchone_document(klass:Type[Document], *args, **kwargs)-> Union[Users, None]:
+async def fetchone_document(klass:Type[Document], *args, **kwargs)-> Union[Users, Students, None]:
     try:
         return klass.objects.get(*args, **kwargs)
     
@@ -56,3 +56,12 @@ async def insert_user_document(*args, **kwargs) -> Users:
     except Exception as e:
         raise ServerErrorException(str(e))
   
+
+
+
+
+async def change_student_data_status(student:Students):
+
+    student.has_data = True
+
+    student.save()

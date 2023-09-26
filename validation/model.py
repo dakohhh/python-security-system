@@ -36,6 +36,11 @@ class CreateUser(BaseModel):
 
 
 
+class CreateStudent(BaseModel):
+    firstname:str
+    lastname:str
+    matric_no:str
+
 
 
 class NotifySchema(BaseModel):

@@ -10,7 +10,7 @@ def get_object_id(id:str):
         return ObjectId(id)
     
     except:
-        raise BadRequestException("Invalid Id")
+        raise BadRequestException(f"{id} is not a valid object id")
     
 
 

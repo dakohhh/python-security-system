@@ -18,7 +18,7 @@ def get_next_filename(folder_path:str):
 
 
 
-def save_image_file_to_user(image, path:str):
+def save_image_file_to_student(image, path:str):
 
     image_name = get_next_filename(path)
 

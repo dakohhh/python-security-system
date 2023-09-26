@@ -43,6 +43,8 @@ class Students(Document):
 
     is_blacklisted = BooleanField(required=True, default=False)
 
+    has_data = BooleanField(required=True, default=False)
+
     created_at = DateTimeField(default=datetime.now())
 
     updated_at = DateTimeField(default=datetime.now())
@@ -75,9 +77,12 @@ class Recordings(Document):
 
     time_of_detection = DateTimeField(required=True)
 
+    is_detected_blacklist = BooleanField(default=False)
+
     created_at = DateTimeField(default=datetime.now())
 
     updated_at = DateTimeField(default=datetime.now())
+
 
 
     meta = {"collection": "recordings", "strict": False}
