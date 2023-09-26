@@ -6,7 +6,7 @@ from database.schema import Recordings
 
 
 
-class RecordinsRepository():
+class RecordingsRepository():
 
     @staticmethod
     async def pagination(page_number, per_page):

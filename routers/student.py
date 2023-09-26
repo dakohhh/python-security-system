@@ -1,12 +1,10 @@
-from fastapi import Request, APIRouter, BackgroundTasks, status
+from fastapi import Request, APIRouter, status
 from fastapi.templating import Jinja2Templates
 from utils.validate import get_object_id
-from validation.model import CreateStudent, NotifySchema, CreateUser
-from authentication.hashing import hashPassword
+from validation.model import CreateStudent
 from response.response import CustomResponse
-from database.crud import fetchall_documents, fetchone_document
-from database.schema import Users, Students
-from utils.notifications import notify_user_by_email
+from database.crud import fetchone_document
+from database.schema import Students
 
 
 router = APIRouter(tags=["Student"], prefix="/student")
@@ -18,7 +16,7 @@ templates = Jinja2Templates(directory="templates")
 
 
 @router.post("/create")
-async def add_user(request:Request, user:CreateStudent):
+async def create_student(request:Request, user:CreateStudent):
 
     new_user = Students(firstname=user.firstname, lastname=user.lastname, matric_no=user.matric_no)
 
