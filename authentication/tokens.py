@@ -2,6 +2,7 @@ import os
 import jwt
 import datetime
 from dotenv import load_dotenv
+from utils.interface import Token
 from exceptions.custom_exception import CredentialsException
 
 load_dotenv()
@@ -24,6 +25,7 @@ def verify_access_token(token:str):
     try:
         payload = jwt.decode(token, str(os.getenv("SECRET_KEY")), algorithms=["HS256"])
 
+        print(payload)
 
         if payload.exp < datetime.datetime.utcnow():
 

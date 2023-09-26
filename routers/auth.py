@@ -20,7 +20,7 @@ async def login_user(request:Request, login_input: LoginSchema):
     token = await authenticate_user(login_input.email, login_input.password)
 
 
-    return CustomResponse("Login user successfully", data=token)
+    return CustomResponse("login user successfully", data=token)
 
 
 

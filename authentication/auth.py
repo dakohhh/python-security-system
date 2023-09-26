@@ -10,7 +10,7 @@ async def authenticate_user(email:str, password:str):
     user = await fetchone_document(Users, email=email)
 
     if user is None or not checkPassword(password, user.password):
-        raise BadRequestException("Incorrect email or password")
+        raise BadRequestException("incorrect email or password")
  
     access_token = create_access_token(str(user.id))
 

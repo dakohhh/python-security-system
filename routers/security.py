@@ -6,12 +6,9 @@ from database.schema import Users
 from response.response import CustomResponse
 from repository.recordings import RecordingsRepository
 
-router = APIRouter(tags=["Security"], prefix="/security")
+router = APIRouter(tags=["Security"], prefix="/securities")
 
 templates = Jinja2Templates(directory="templates")
-
-
-
 
 
 
@@ -33,6 +30,13 @@ async def get_security_videos(request:Request, page_number:int, user:Users=Depen
     }
 
     return CustomResponse("get all security videos", status.HTTP_200_OK, data=data)
+
+
+
+
+
+
+
 
 
 
