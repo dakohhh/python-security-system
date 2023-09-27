@@ -20,14 +20,18 @@ async def get_security_videos(request:Request, page_number:int, user:Users=Depen
 
     recordings = asyncio.create_task(RecordingsRepository.pagination(page_number, per_page))
 
-    total_orders = asyncio.create_task(RecordingsRepository.get_total_recordings)
+    total_orders = asyncio.create_task(RecordingsRepository.get_total_recordings())
 
+    
     data = {
         "recordings": await recordings,
-        "page_number": page_number,  
-        "per_pages": per_page,
-        "total_pages": (await total_orders + per_page - 1) // per_page,
+        "pagination" : {
+            "page_number": page_number,  
+            "per_pages": per_page,
+            "total_pages": (await total_orders + per_page - 1) // per_page,
+        }
     }
+    
 
     return CustomResponse("get all security videos", status.HTTP_200_OK, data=data)
 

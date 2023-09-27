@@ -17,7 +17,7 @@ async def get_current_user(request:Request, data:HTTPAuthorizationCredentials=De
     access_token_data = verify_access_token(data.credentials)
 
 
-    user =  await fetchone_document(Users, id=access_token_data.user_id)
+    user =  await fetchone_document(Users, id=access_token_data.user)
 
     return user
 
