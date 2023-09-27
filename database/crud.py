@@ -60,8 +60,3 @@ async def insert_user_document(*args, **kwargs) -> Users:
 
 
 
-async def change_student_data_status(student:Students):
-
-    student.has_data = True
-
-    student.save()

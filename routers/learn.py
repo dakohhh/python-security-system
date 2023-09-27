@@ -4,8 +4,9 @@ import cv2
 import face_recognition
 import asyncio
 from fastapi import Request, APIRouter, UploadFile, File, Form, BackgroundTasks
-from database.crud import fetchone_document, change_student_data_status
+from database.crud import fetchone_document
 from database.schema import Users, Students
+from repository.students import StudentsRepository
 from exceptions.custom_exception import BadRequestException, NotFoundException
 from utils.file import save_image_file_to_student
 from utils.model import train_evaluate_update
@@ -61,9 +62,9 @@ async def add_image(request:Request, backgroud_task:BackgroundTasks, student_id:
 
     save_image_file_to_student(cropped_image, file_path_for_student)
 
-    asyncio.create_task(change_student_data_status(student))
+    asyncio.create_task(StudentsRepository.change_student_data_status(student))
 
-    return CustomResponse("Added Image To student Successfully")
+    return CustomResponse("added image To student successfully")
 
 
 
