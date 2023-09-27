@@ -2,6 +2,7 @@ from fastapi import Request, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from database.crud import fetchone_document
 from database.schema import Users
+from utils.validate import get_object_id
 from .tokens import verify_access_token
 
 
@@ -17,7 +18,7 @@ async def get_current_user(request:Request, data:HTTPAuthorizationCredentials=De
     access_token_data = verify_access_token(data.credentials)
 
 
-    user =  await fetchone_document(Users, id=access_token_data.user)
+    user =  await fetchone_document(Users, id=get_object_id(access_token_data.user))
 
     return user
 

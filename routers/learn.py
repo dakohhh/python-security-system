@@ -55,12 +55,9 @@ async def add_image(request:Request, backgroud_task:BackgroundTasks, student_id:
 
     cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
 
-    file_path_for_student = os.path.join(os.getcwd(), f"static/model_data/{student_id}")
+    file_path_for_student = os.path.join(os.getcwd(), f"static/data/{student_id}")
 
     os.makedirs(file_path_for_student, exist_ok=True)
-
-    asyncio.create_task()
-
 
     save_image_file_to_student(cropped_image, file_path_for_student)
 

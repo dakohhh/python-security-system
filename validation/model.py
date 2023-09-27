@@ -41,13 +41,17 @@ class CreateStudent(BaseModel):
     lastname:str
     matric_no:str
 
+    @validator("matric_no")
+    def validate_matric_no(cls, v):
 
+        try:
+            if len(v) != 11: raise BadRequestException("matric no must be lenght of 10")
 
-class NotifySchema(BaseModel):
-    camera:str 
-    link:str
-    detected_user:str 
-    time_of_detection:str
+            return int(v)
+        
+        except ValueError as e:
+            raise BadRequestException(str(e))
+
 
 
 
@@ -68,3 +72,11 @@ class LoginSchema(BaseModel):
 
             raise BadRequestException(str(e))
 
+
+
+
+class NotifySchema(BaseModel):
+    camera:str 
+    link:str
+    detected_user:str 
+    time_of_detection:str
