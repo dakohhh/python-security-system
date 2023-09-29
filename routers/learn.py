@@ -5,11 +5,11 @@ import face_recognition
 import asyncio
 from fastapi import Request, APIRouter, UploadFile, File, Form, BackgroundTasks
 from database.crud import fetchone_document
-from database.schema import Users, Students
+from database.schema import Students
 from repository.students import StudentsRepository
 from exceptions.custom_exception import BadRequestException, NotFoundException
 from utils.file import save_image_file_to_student
-from utils.model import train_evaluate_update
+from utils.model import SecurityModel
 from response.response import CustomResponse
 from utils.validate import verify_image, get_object_id
 
@@ -75,7 +75,14 @@ async def add_image(request:Request, backgroud_task:BackgroundTasks, student_id:
 @router.post("/train-data")
 async def train(request:Request):
 
-    loss, accuracy = await train_evaluate_update(3, "static/model_data")
+    path_to_data = "static/model_data"
+
+    path_to_save_model = os.path.join(os.getcwd(), "tf_face_model.h5")
+
+    security_model = SecurityModel(path_to_data, path_to_save_model)
+
+
+    loss, accuracy = await security_model.train_evaluate_update(3)
 
     print(loss)
 
@@ -83,4 +90,4 @@ async def train(request:Request):
 
     data = {"accuracy": accuracy, "loss": loss}
 
-    return CustomResponse("Model Trained Successfully", data=data)
+    return CustomResponse("model Trained Successfully", data=data)

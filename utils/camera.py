@@ -4,7 +4,7 @@ import datetime
 import threading
 import numpy as np
 import face_recognition
-from .model import get_model, get_class_dict
+from .model import get_model, SecurityModel
 from .video import adjust_text_size
 from .storage import handle_upload
 
@@ -26,7 +26,7 @@ class Camera():
         self.armed = False
         self.camera_thread = None
         self.camera_loc = 0
-        self.class_list = get_class_dict(os.path.join(os.getcwd(), "models/class_dict.json"))
+        self.class_list = SecurityModel.get_class_dict(os.path.join(os.getcwd(), "models/class_dict.json"))
         self.model = get_model(os.path.join(os.getcwd(), "models/tf_face_model.h5"))
 
         print("Camera has started...")
