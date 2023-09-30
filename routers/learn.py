@@ -3,9 +3,10 @@ import os
 import cv2
 import face_recognition
 import asyncio
-from fastapi import Request, APIRouter, UploadFile, File, Form, BackgroundTasks
+from fastapi import Depends, Request, APIRouter, UploadFile, File, Form, BackgroundTasks
 from database.crud import fetchone_document
-from database.schema import Students
+from authentication.bearer import get_current_user
+from database.schema import Students, Users
 from repository.students import StudentsRepository
 from exceptions.custom_exception import BadRequestException, NotFoundException
 from utils.file import save_image_file_to_student
@@ -17,6 +18,16 @@ from utils.validate import verify_image, get_object_id
 
 
 router = APIRouter(tags=["Learn"], prefix="/learn")
+
+
+@router.get("/students_have_data")
+async def student_have_data(request:Request, user:Users=Depends(get_current_user)):
+
+
+    have_data = await StudentsRepository.does_students_have_data()
+
+
+    return CustomResponse("have student data condition", data=have_data.to_dict())
 
 
 
@@ -72,7 +83,7 @@ async def add_image(request:Request, backgroud_task:BackgroundTasks, student_id:
 
 
 
-@router.post("/train-data")
+@router.post("/train_data")
 async def train(request:Request):
 
     path_to_data = "static/model_data"

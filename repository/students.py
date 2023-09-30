@@ -1,5 +1,5 @@
 from database.schema import Students
-
+from utils.interface import StudentHaveData
 
 
 
@@ -19,4 +19,11 @@ class StudentsRepository:
         student.has_data = True
 
         student.save()
+
+    @staticmethod
+    async def does_students_have_data() -> StudentHaveData:
+
+        student = Students.objects.get(has_data=True)
+
+        return StudentHaveData(student, student is not None)
 
