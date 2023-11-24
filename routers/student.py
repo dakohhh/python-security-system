@@ -1,52 +1,53 @@
-from fastapi import Request, APIRouter, status
-from fastapi.templating import Jinja2Templates
-from utils.validate import get_object_id
+import asyncio
+from utils.image import ModelImage
 from validation.model import CreateStudent
 from response.response import CustomResponse
-from database.crud import fetchone_document
-from database.schema import Students
+from repository.students import StudentsRepository
+from exceptions.custom_exception import BadRequestException
+from fastapi import Depends, Request, APIRouter, status, BackgroundTasks
+
 
 
 router = APIRouter(tags=["Student"], prefix="/student")
 
 
-templates = Jinja2Templates(directory="templates")
-
-
-
-
 @router.post("/create")
-async def create_student(request:Request, user:CreateStudent):
+async def create_student(
+    request: Request,
+    background_task: BackgroundTasks,
+    student: CreateStudent = Depends(),
+):
+    if await StudentsRepository.does_matric_exist(student.matric_no):
+        raise BadRequestException(f"matric no '{student.matric_no}' already exists")
 
-    new_user = Students(firstname=user.firstname, lastname=user.lastname, matric_no=user.matric_no)
+    new_student = asyncio.create_task(StudentsRepository.create_student(student))
 
-    new_user.save()
+    images = ModelImage(student.images)
 
-    return CustomResponse("created user successfully", status=status.HTTP_201_CREATED)
+    images.validate_images()
 
+    new_student = await new_student
+
+    images.save_cropped_images(str(new_student.id))
+
+    return CustomResponse(
+        "created student successfully",
+        status=status.HTTP_201_CREATED,
+        data=new_student.to_dict(),
+    )
 
 
 @router.patch("/blacklist/{student_id}")
-async def blacklist_user(request:Request, student_id:str):
-    
-    student = await fetchone_document(Students, id=get_object_id(student_id))
-
-    student.is_blacklisted = True
-
-    student.save()
+async def blacklist_user(request: Request, student_id: str):
+    await StudentsRepository.blacklist_student(student_id)
 
     return CustomResponse("blacklisted student Successfully", status=status.HTTP_200_OK)
 
 
-
-
 @router.patch("/unblacklist/{student_id}")
-async def unblacklist_student(request:Request, student_id:str):
+async def unblacklist_student(request: Request, student_id: str):
+    await StudentsRepository.unblacklist_student(student_id)
 
-    student = await fetchone_document(Students, id=get_object_id(student_id))
-
-    student.is_blacklisted = False
-
-    student.save()
-
-    return CustomResponse("unblacklisted student successfully", status=status.HTTP_200_OK)
+    return CustomResponse(
+        "unblacklisted student successfully", status=status.HTTP_200_OK
+    )

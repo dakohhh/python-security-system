@@ -50,7 +50,7 @@ class Students(Document):
     updated_at = DateTimeField(default=datetime.now())
 
 
-    meta = {"collection": "students", "strict": False}
+    meta = {"collection": "students"}
 
 
     def to_dict(self) -> dict:

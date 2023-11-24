@@ -3,12 +3,14 @@ import os
 import cv2
 import face_recognition
 import asyncio
-from fastapi import Request, APIRouter, UploadFile, File, Form, BackgroundTasks
-from database.crud import fetchone_document, change_student_data_status
-from database.schema import Users, Students
+from fastapi import Depends, Request, APIRouter, UploadFile, File, Form, BackgroundTasks
+from database.crud import fetchone_document
+from authentication.bearer import get_current_user
+from database.schema import Students, Users
+from repository.students import StudentsRepository
 from exceptions.custom_exception import BadRequestException, NotFoundException
 from utils.file import save_image_file_to_student
-from utils.model import train_evaluate_update
+from utils.model import SecurityModel
 from response.response import CustomResponse
 from utils.validate import verify_image, get_object_id
 
@@ -16,6 +18,16 @@ from utils.validate import verify_image, get_object_id
 
 
 router = APIRouter(tags=["Learn"], prefix="/learn")
+
+
+@router.get("/students_have_data")
+async def student_have_data(request:Request, user:Users=Depends(get_current_user)):
+
+
+    have_data = await StudentsRepository.does_students_have_data()
+
+
+    return CustomResponse("have student data condition", data=have_data.to_dict())
 
 
 
@@ -55,29 +67,33 @@ async def add_image(request:Request, backgroud_task:BackgroundTasks, student_id:
 
     cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
 
-    file_path_for_student = os.path.join(os.getcwd(), f"static/model_data/{student_id}")
+    file_path_for_student = os.path.join(os.getcwd(), f"static/data/{student_id}")
 
     os.makedirs(file_path_for_student, exist_ok=True)
 
-    asyncio.create_task()
-
-
     save_image_file_to_student(cropped_image, file_path_for_student)
 
-    asyncio.create_task(change_student_data_status(student))
+    asyncio.create_task(StudentsRepository.change_student_data_status(student))
 
-    return CustomResponse("Added Image To student Successfully")
-
-
+    return CustomResponse("added image To student successfully")
 
 
 
 
 
-@router.post("/train-data")
+
+
+@router.post("/train_data")
 async def train(request:Request):
 
-    loss, accuracy = await train_evaluate_update(3, "static/model_data")
+    path_to_data = "static/model_data"
+
+    path_to_save_model = os.path.join(os.getcwd(), "tf_face_model.h5")
+
+    security_model = SecurityModel(path_to_data, path_to_save_model)
+
+
+    loss, accuracy = await security_model.train_evaluate_update(3)
 
     print(loss)
 
@@ -85,4 +101,4 @@ async def train(request:Request):
 
     data = {"accuracy": accuracy, "loss": loss}
 
-    return CustomResponse("Model Trained Successfully", data=data)
+    return CustomResponse("model Trained Successfully", data=data)
