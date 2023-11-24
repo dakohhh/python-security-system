@@ -1,5 +1,5 @@
 from typing import List, Union
-from fastapi import Form
+from fastapi import File, Form, UploadFile
 from pydantic import BaseModel, validator
 from bson import ObjectId
 from email_validator import validate_email, EmailNotValidError
@@ -34,23 +34,30 @@ class CreateUser(BaseModel):
             raise BadRequestException(str(e))
 
 
+class CreateStudent:
+    def __init__(
+        self,
+        firstname: str = Form(...),
+        lastname: str = Form(...),
+        matric_no:str = Form(...),
+        image: List[UploadFile] = File(...),
 
+    ):
+        self.firstname = firstname
+        self.lastname = lastname
+        self.image = image
+        self.matric_no = self.validate_matric(matric_no)
 
-class CreateStudent(BaseModel):
-    firstname:str
-    lastname:str
-    matric_no:str
-
-    @validator("matric_no")
-    def validate_matric_no(cls, v):
+    def validate_matric(self, v):
 
         try:
-            if len(v) != 11: raise BadRequestException("matric no must be lenght of 10")
-
+            if len(v) != 11: 
+                raise BadRequestException("matric no must be lenght of 10")
             return int(v)
         
         except ValueError as e:
             raise BadRequestException(str(e))
+
 
 
 

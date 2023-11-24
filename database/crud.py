@@ -41,20 +41,7 @@ async def fetchall(klass:Type[Document]) ->Union[List[Users], None]:
         raise ServerErrorException(str(e))
 
 
-async def insert_user_document(*args, **kwargs) -> Users:
 
-    try:
-        new_user = Users(*args, **kwargs)
-
-        new_user.save()
-
-        return new_user
-
-    except MongoEngineException as e:
-        raise BadRequestException(str(e))
-    
-    except Exception as e:
-        raise ServerErrorException(str(e))
   
 
 

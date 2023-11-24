@@ -1,5 +1,6 @@
 from database.schema import Students
 from utils.interface import StudentHaveData
+from validation.model import CreateStudent
 
 
 
@@ -26,4 +27,28 @@ class StudentsRepository:
         student = Students.objects.get(has_data=True)
 
         return StudentHaveData(student, student is not None)
+
+    
+    @staticmethod
+    async def create_student(student: CreateStudent) -> Students:
+
+        new_student = Students(**student)
+
+        new_student.save()
+
+        return new_student
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

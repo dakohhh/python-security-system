@@ -32,7 +32,17 @@ async def notify_user(request:Request, notify:NotifySchema, background_task:Back
 
 
 
+@router.post("/create")
+async def add_user(request:Request, user:CreateUser):
 
+    if await fetchone_document(Users, email=user.email):
+
+        raise BadRequestException("email already exist")
+
+
+    new_user = await UsersRepository.create_user(user)
+
+    return CustomResponse("created user successfully", status=status.HTTP_201_CREATED, data=new_user.to_dict())
 
 
 
