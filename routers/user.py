@@ -2,12 +2,10 @@ from fastapi import Request, APIRouter, BackgroundTasks, status
 from fastapi.templating import Jinja2Templates
 from exceptions.custom_exception import BadRequestException
 from repository.users import UsersRepository
-from utils.validate import get_object_id
-from validation.model import CreateStudent, NotifySchema, CreateUser
-from authentication.hashing import hashPassword
+from validation.model import NotifySchema, CreateUser
 from response.response import CustomResponse
 from database.crud import fetchall_documents, fetchone_document
-from database.schema import Users, Students
+from database.schema import Users
 from utils.notifications import notify_user_by_email
 
 

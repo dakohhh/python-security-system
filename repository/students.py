@@ -1,5 +1,6 @@
 from database.schema import Students
 from utils.interface import StudentHaveData
+from utils.validate import get_object_id
 from validation.model import CreateStudent
 
 
@@ -33,3 +34,19 @@ class StudentsRepository:
         new_student.save()
 
         return new_student
+
+    @staticmethod
+    async def blacklist_student(student_id: str):
+        query: Students = Students.objects(id=get_object_id(student_id))
+
+        query.is_blacklisted = True
+
+        query.save()
+
+    @staticmethod
+    async def unblacklist_student(student_id: str):
+        query: Students = Students.objects(id=get_object_id(student_id))
+
+        query.is_blacklisted = False
+
+        query.save()

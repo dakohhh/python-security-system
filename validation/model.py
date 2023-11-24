@@ -40,12 +40,12 @@ class CreateStudent:
         firstname: str = Form(...),
         lastname: str = Form(...),
         matric_no:str = Form(...),
-        image: List[UploadFile] = File(...),
+        images: List[UploadFile] = File(...),
 
     ):
         self.firstname = firstname
         self.lastname = lastname
-        self.image = image
+        self.images = images
         self.matric_no = self.validate_matric(matric_no)
 
     def validate_matric(self, v):

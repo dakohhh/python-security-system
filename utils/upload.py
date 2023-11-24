@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
 	path = os.path.join(os.getcwd(), "upload_data/image.jpg")
 
-	uploader = NacosUpload(path, "them_wisdom")
+	uploader = SecuritySystemUpload(path, "them_wisdom")
 
 	pprint(uploader.handle_upload())
 
