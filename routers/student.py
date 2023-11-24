@@ -1,4 +1,4 @@
-from fastapi import Depends, Request, APIRouter, status
+from fastapi import Depends, Request, APIRouter, status, BackgroundTasks
 from utils.validate import get_object_id
 from validation.model import CreateStudent
 from response.response import CustomResponse
@@ -12,11 +12,18 @@ router = APIRouter(tags=["Student"], prefix="/student")
 
 
 @router.post("/create")
-async def create_student(request: Request, student: CreateStudent = Depends()):
+async def create_student(
+    request: Request,
+    background_task: BackgroundTasks,
+    student: CreateStudent = Depends(),
+):
     if await StudentsRepository.does_matric_exist(student.matric_no):
         raise BadRequestException(f"matric no '{student.matric_no}' already exists")
 
     new_student = await StudentsRepository.create_student(student)
+
+    for image in student.image:
+        print(image)
 
     return CustomResponse(
         "created student successfully",
