@@ -9,8 +9,6 @@ from routers.auth import router as auth
 from routers.student import router as student
 from routers.security import router as security
 from response.response import CustomResponse
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 from exceptions.custom_exception import *
@@ -47,10 +45,6 @@ app.add_middleware(
 )
 
 
-templates = Jinja2Templates(directory="templates")
-
-
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(user)
 app.include_router(auth)
