@@ -2,3 +2,7 @@
 .venv/
 .env
 temp.txt
+frontend/
+templates/
+static/css/
+static/js/
