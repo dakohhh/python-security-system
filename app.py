@@ -1,13 +1,18 @@
 import os
 import certifi
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 from mongoengine import connect, errors
 from routers.user import router as user
 from routers.auth import router as auth
-# from routers.learn import router as learn
+# from routers.learn import router as 
 from routers.student import router as student
 from routers.security import router as security
-from response.response import CustomResponse 
+from response.response import CustomResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+
 from exceptions.custom_exception import *
 from dotenv import load_dotenv
 
@@ -28,7 +33,24 @@ connect(host=os.getenv("MONGODB_URL"), tls=True, tlsCAFile=CERTIFICATE)
 app = FastAPI()
 
 
+origins = [
+    "http://127.0.0.1:5500/",
+    "http://127.0.0.1:5500",
+]
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+templates = Jinja2Templates(directory="templates")
+
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(user)
 app.include_router(auth)
@@ -71,6 +93,10 @@ def arm_camera(request:Request):
     camera.disarm()
 
     return CustomResponse("Camera is Disarmed")
+
+
+
+
 
 
 
