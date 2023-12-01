@@ -1,14 +1,13 @@
 import asyncio
+from database.schema import Users
 from fastapi import APIRouter, Request, Depends, status
 from authentication.bearer import get_current_user
 from fastapi.templating import Jinja2Templates
-from database.schema import Users
 from response.response import CustomResponse
 from repository.recordings import RecordingsRepository
 
 router = APIRouter(tags=["Security"], prefix="/securities")
 
-templates = Jinja2Templates(directory="templates")
 
 
 

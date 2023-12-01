@@ -1,3 +1,4 @@
+import typing
 from database.schema import Students
 from utils.interface import StudentHaveData
 from utils.validate import get_object_id
@@ -50,3 +51,10 @@ class StudentsRepository:
         query.is_blacklisted = False
 
         query.save()
+
+    @staticmethod
+    async def get_all_students() -> typing.List[Students]:
+
+        query = Students.objects()
+
+        return query

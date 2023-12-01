@@ -13,6 +13,7 @@ imutils = "^0.5.4"
 uvicorn = "^0.23.2"
 dataclasses-json = "^0.6.1"
 certifi = "^2023.11.17"
+bcrypt = "^4.1.1"
 
 [tool.poetry.group.dev.dependencies]
 uvicorn = "^0.23.2"

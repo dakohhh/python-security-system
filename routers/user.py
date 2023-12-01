@@ -1,8 +1,14 @@
-from fastapi import Request, APIRouter, BackgroundTasks, status
+import os
+import asyncio
+from fastapi import Depends, Request, APIRouter, BackgroundTasks, status
 from fastapi.templating import Jinja2Templates
 from exceptions.custom_exception import BadRequestException
+from repository.students import StudentsRepository
 from repository.users import UsersRepository
-from validation.model import NotifySchema, CreateUser
+from authentication.bearer import get_current_user
+from utils.image import ModelImage
+from utils.model import SecurityModel
+from validation.model import CreateStudent, NotifySchema, CreateUser
 from response.response import CustomResponse
 from database.crud import fetchall_documents, fetchone_document
 from database.schema import Users
@@ -34,7 +40,9 @@ async def notify_user(
 
 
 @router.post("/create")
-async def add_user(request: Request, user: CreateUser):
+async def add_user(
+    request: Request, user: CreateUser, admin: Users = Depends(get_current_user)
+):
     if await fetchone_document(Users, email=user.email):
         raise BadRequestException("email already exist")
 
@@ -45,6 +53,69 @@ async def add_user(request: Request, user: CreateUser):
         status=status.HTTP_201_CREATED,
         data=new_user.to_dict(),
     )
+
+
+@router.post("/create/student")
+async def create_student(
+    request: Request,
+    background_task: BackgroundTasks,
+    student: CreateStudent = Depends(),
+    admin: Users = Depends(get_current_user),
+):
+    if await StudentsRepository.does_matric_exist(student.matric_no):
+        raise BadRequestException(f"matric no '{student.matric_no}' already exists")
+
+    new_student = asyncio.create_task(StudentsRepository.create_student(student))
+
+    images = ModelImage(student.images)
+
+    images.validate_images()
+
+    new_student = await new_student
+
+    images.save_cropped_images(str(new_student.id))
+
+    return CustomResponse(
+        "created student successfully",
+        status=status.HTTP_201_CREATED,
+        data=new_student.to_dict(),
+    )
+
+
+@router.patch("/blacklist/{student_id}")
+async def blacklist_user(
+    request: Request, student_id: str, admin: Users = Depends(get_current_user)
+):
+    await StudentsRepository.blacklist_student(student_id)
+
+    return CustomResponse("blacklisted student Successfully", status=status.HTTP_200_OK)
+
+
+@router.patch("/unblacklist/{student_id}")
+async def unblacklist_student(
+    request: Request, student_id: str, admin: Users = Depends(get_current_user)
+):
+    await StudentsRepository.unblacklist_student(student_id)
+
+    return CustomResponse(
+        "unblacklisted student successfully", status=status.HTTP_200_OK
+    )
+
+
+
+@router.get("/students_have_data")
+async def student_have_data(request:Request, admin:Users=Depends(get_current_user)):
+
+    path = os.path.join(os.getcwd(), "models/class_dict.json")
+
+    class_dict = SecurityModel.get_class_dict(path)
+
+    print(class_dict)
+
+
+    return CustomResponse("have student data condition", data=None)
+
+
 
 
 # @router.get("/get_users")
