@@ -1,5 +1,5 @@
 import os
-import cv2 as cv
+import cv2 as cv2
 import typing
 import face_recognition
 from fastapi import UploadFile
@@ -50,7 +50,7 @@ class ModelImage():
 
         cropped_image = cropped_image[top:bottom, left:right]
 
-        cropped_image = cv.cvtColor(cropped_image, cv.COLOR_BGR2RGB)
+        cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
 
 
         return cropped_image
