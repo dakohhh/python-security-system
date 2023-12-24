@@ -1,12 +1,10 @@
 import os
 import certifi
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
 from mongoengine import connect, errors
 from routers.user import router as user
 from routers.auth import router as auth
-# from routers.learn import router as 
-from routers.student import router as student
+from routers.learn import router as learn
 from routers.security import router as security
 from response.response import CustomResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -48,8 +46,7 @@ app.add_middleware(
 
 app.include_router(user)
 app.include_router(auth)
-# app.include_router(learn)
-app.include_router(student)
+app.include_router(learn)
 app.include_router(security)
 app.add_exception_handler(UserExistException, user_exist_exception_handler)
 app.add_exception_handler(UnauthorizedException, unauthorized_exception_handler)

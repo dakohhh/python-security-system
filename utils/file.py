@@ -25,3 +25,7 @@ def save_image_file_to_student(image, path:str):
     image_path = os.path.join(path, f"{image_name}.jpg")
 
     cv2.imwrite(image_path, image)
+
+
+
+
