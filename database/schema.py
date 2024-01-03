@@ -1,5 +1,5 @@
 from datetime import datetime
-from mongoengine import Document, StringField, IntField, BooleanField, EmailField, DateTimeField
+from mongoengine import Document, StringField, IntField, BooleanField, EmailField, DateTimeField, ReferenceField
 
 
 
@@ -32,16 +32,13 @@ class Users(Document):
 
 
 
-
-class Students(Document):
+class Staffs(Document):
 
     firstname = StringField(required=True, min_lenght=3, max_length=50)
 
     lastname = StringField(required=True, min_lenght=3, max_length=50)
 
-    matric_no = IntField(required=True, unique=True)
-
-    is_blacklisted = BooleanField(required=True, default=False)
+    staff_id = StringField(required=True, default="1234")
 
     has_data = BooleanField(required=True, default=False)
 
@@ -58,8 +55,7 @@ class Students(Document):
             "_id": str(self.id),
             "firstname": self.firstname,
             "lastname": self.lastname,
-            "matric_no": self.matric_no,
-            "is_blacklisted": self.is_blacklisted,
+            "staff_id": self.staff_id,
             "created_at": str(self.created_at),
             "updated_at": str(self.updated_at)
         }
@@ -67,17 +63,22 @@ class Students(Document):
 
 
 
+class SecurityPersonels(Document):
+    firstname = StringField(required=True, min_lenght=3, max_length=50)
 
+    lastname = StringField(required=True, min_lenght=3, max_length=50)
 
-class Recordings(Document):
+    phone_number = IntField(required=True)
 
-    name = StringField(required=True, max_length=50)
+    pass
 
-    url = StringField(required=True)
+class Logs(Document):
+
+    staff_detected = ReferenceField(Staffs, required=False)
+
+    location = StringField(required=True)
 
     time_of_detection = DateTimeField(required=True)
-
-    is_detected_blacklist = BooleanField(default=False)
 
     created_at = DateTimeField(default=datetime.now())
 

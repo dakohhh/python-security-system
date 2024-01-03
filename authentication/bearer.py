@@ -1,6 +1,6 @@
 from fastapi import Request, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from database.crud import fetchone_document
+# from database.crud import fetchone_document
 from database.schema import Users
 from utils.validate import get_object_id
 from .tokens import verify_access_token

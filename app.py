@@ -2,7 +2,7 @@ import os
 import certifi
 from fastapi import FastAPI
 from mongoengine import connect, errors
-from routers.user import router as user
+# from routers.user import router as user
 from routers.auth import router as auth
 # from routers.learn import router as learn
 from routers.security import router as security
@@ -44,7 +44,7 @@ app.add_middleware(
 
 
 
-app.include_router(user)
+# app.include_router(user)
 app.include_router(auth)
 # app.include_router(learn)
 app.include_router(security)
@@ -84,6 +84,8 @@ def arm_camera(request:Request):
     camera.disarm()
 
     return CustomResponse("Camera is Disarmed")
+
+
 
 
 

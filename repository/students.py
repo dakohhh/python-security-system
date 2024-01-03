@@ -58,3 +58,5 @@ class StudentsRepository:
         query = Students.objects()
 
         return query
+
+    
