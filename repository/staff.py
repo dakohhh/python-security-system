@@ -17,6 +17,8 @@ class StaffRepository:
         new_staff = Staffs(
             firstname=staff.firstname,
             lastname=staff.lastname,
+            phone_number=staff.phone_number,
+            is_security_personnel=staff.is_security_personnel,
             staff_id=staff.staff_id,
         )
 
@@ -27,5 +29,13 @@ class StaffRepository:
     @staticmethod
     def get_all_staffs() -> typing.List[Staffs]:
         query = Staffs.objects()
+
+        return query
+    
+
+    @staticmethod
+    async def get_security_personnel_staffs() -> typing.List[Staffs]:
+
+        query = Staffs.objects(is_security_personnel=True)
 
         return query

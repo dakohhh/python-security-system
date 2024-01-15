@@ -2,8 +2,6 @@ import requests
 import os
 
 
-
-
 class CustomHttpClient:
     def __init__(self, base_url, headers=None):
         self.base_url = base_url
@@ -23,21 +21,24 @@ class CustomHttpClient:
         response = requests.post(
             url, data=data, json=json, headers=self.headers, timeout=self.timeout
         )
+
+        print(response.json())
         response.raise_for_status()
         return response
 
 
-
 SMS_LARAVEL_SESSION = os.getenv("SMS_LARAVEL_SESSION")
+
 
 class SMSClient(CustomHttpClient):
     def __init__(self, base_url):
-
-        headers = {
-            "Cookie": f"laravel_session={SMS_LARAVEL_SESSION}"
-        }
+        headers = {"Cookie": f"laravel_session={SMS_LARAVEL_SESSION}"}
 
         super().__init__(base_url, headers)
 
 
+class NotifyClient(CustomHttpClient):
+    def __init__(self, base_url):
+        headers = {"Content-Type": "application/json"}
 
+        super().__init__(base_url, headers)

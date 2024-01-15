@@ -1,21 +1,17 @@
 import os
 import asyncio
-from fastapi import Depends, Request, APIRouter, BackgroundTasks, status
+from typing import List
+from fastapi import Depends, Request, APIRouter, BackgroundTasks, Security, status
 from fastapi.templating import Jinja2Templates
 from exceptions.custom_exception import BadRequestException
 from repository.staff import StaffRepository
 from repository.users import UsersRepository
 from authentication.bearer import get_current_user
 from utils.image import ModelImage
-
-# from utils.image import ModelImage
-# from utils.model import SecurityModel
+from utils.notifications import notify_user_by_email, notify_users_by_phone
 from validation.model import CreateStaff, NotifySchema, CreateUser
 from client.response import CustomResponse
 from database.schema import Users
-
-# from utils.notifications import notify_user_by_email
-
 
 router = APIRouter(tags=["User"], prefix="/user")
 
@@ -27,16 +23,14 @@ templates = Jinja2Templates(directory="templates")
 async def notify_user(
     request: Request, notify: NotifySchema, background_task: BackgroundTasks
 ):
-    emails = [user.email for user in await fetchall_documents(Users)]
+    security_staffs = await StaffRepository.get_security_personnel_staffs()
 
-    background_task.add_task(
-        notify_user_by_email,
-        emails,
-        notify.camera,
-        notify.link,
-        notify.detected_user,
-        notify.time_of_detection,
-    )
+    # background_task.add_task(
+    #     notify_users_by_phone,
+    #     staffs=security_staffs,
+    #     camera=notify.camera,
+    #     time_of_detection=notify.time_of_detection,
+    # )
 
     return CustomResponse("notified user successfully")
 
@@ -73,9 +67,8 @@ async def create_staff(
 
     new_staff = asyncio.create_task(StaffRepository.create_staff(staff))
 
-
     if len(staff.images) != 9:
-        raise BadRequestException("must be exactly 5 images to be fitted")
+        raise BadRequestException("must be exactly 9 images to be fitted")
 
     model_images = ModelImage(staff.images)
 
@@ -86,7 +79,6 @@ async def create_staff(
     new_staff.encodings = model_images.get_face_encodings()
 
     new_staff.save()
-
 
     return CustomResponse(
         "created student successfully",
@@ -104,10 +96,6 @@ async def student_have_data(request: Request, admin: Users = Depends(get_current
     print(class_dict)
 
     return CustomResponse("have student data condition", data=None)
-
-
-
-
 
 
 # @router.get("/get_users")

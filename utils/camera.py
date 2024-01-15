@@ -5,22 +5,20 @@ from datetime import datetime
 import threading
 import numpy as np
 import face_recognition
+from client import send_notify_request
 from database.schema import Staffs
 from utils.interface import CreateLog
 from repository.logs import LogsRepository
 from utils.func import threshold_compare
+from utils.notifications import notify_users_by_phone
 
 
-
-
-class Camera():
-
+class Camera:
     cap = cv2.VideoCapture(0)
 
     video_writer = None
 
     FRAME_THICKNESS = 5
-
 
     def __init__(self, staffs):
         self.armed = False
@@ -33,27 +31,21 @@ class Camera():
         print("Camera has started...")
 
     def arm(self):
-
         # Arm Camera and Initialize Camera Thread
         if not self.armed and not self.camera_thread:
-
             self.camera_thread = threading.Thread(target=self.run)
-
 
         self.camera_thread.start()
         self.armed = True
 
     def disarm(self):
-
         # Disarm Camera and Initialize Camera Thread
-        
+
         self.camera_thread = None
         self.armed = False
         print("Camera is disarmed")
 
     def run(self):
-
-        
         Camera.cap = cv2.VideoCapture(0)
 
         none_detected_counter = 0
@@ -64,7 +56,6 @@ class Camera():
             print("Camera is armed")
 
         while self.armed:
-
             success, frame = self.cap.read()
 
             if not success:
@@ -73,18 +64,19 @@ class Camera():
             unknown_faces_image_encodings = face_recognition.face_encodings(frame)
 
             if unknown_faces_image_encodings:
-
                 none_detected_counter = 0
 
-
-                for unknown_face_encoding in unknown_faces_image_encodings: # Iterate over each of the encoded faces detected on frame:
-
+                for (
+                    unknown_face_encoding
+                ) in (
+                    unknown_faces_image_encodings
+                ):  # Iterate over each of the encoded faces detected on frame:
                     for staff in self.staffs:
-
-                        results = face_recognition.compare_faces(np.array(staff.encodings), unknown_face_encoding)
+                        results = face_recognition.compare_faces(
+                            np.array(staff.encodings), unknown_face_encoding
+                        )
 
                         if threshold_compare(results) >= self.threshold:
-
                             # Log Time of detection for staff
 
                             print("Staff detected")
@@ -100,15 +92,20 @@ class Camera():
                             # Start recording if not already recording
                             if not recording:
                                 recording = True
-                                recording_name = now.strftime("%Y-%m-%d__%H-%M-%S") + "_staff.avi"
-                                fourcc = cv2.VideoWriter_fourcc(*'XVID')
-                                recording_path = os.path.join(os.getcwd(), "recordings", recording_name)
-                                self.video_writer = cv2.VideoWriter(recording_path, fourcc, 5.0, (640, 480))
+                                recording_name = (
+                                    now.strftime("%Y-%m-%d__%H-%M-%S") + "_staff.avi"
+                                )
+                                fourcc = cv2.VideoWriter_fourcc(*"XVID")
+                                recording_path = os.path.join(
+                                    os.getcwd(), "recordings", recording_name
+                                )
+                                self.video_writer = cv2.VideoWriter(
+                                    recording_path, fourcc, 5.0, (640, 480)
+                                )
 
                             self.video_writer.write(frame)
 
                         else:
-                            
                             print("Unkwnown detected")
 
                             # Log Time of detection for unkwnown person
@@ -120,49 +117,47 @@ class Camera():
                             # Start recording if not already recording
                             if not recording:
                                 recording = True
-                                recording_name = now.strftime("%Y-%m-%d__%H-%M-%S") + "_unknown.avi"
-                                fourcc = cv2.VideoWriter_fourcc(*'XVID')
-                                recording_path = os.path.join(os.getcwd(), "recordings", recording_name)
-                                self.video_writer = cv2.VideoWriter(recording_path, fourcc, 5.0, (640, 480))
+                                recording_name = (
+                                    now.strftime("%Y-%m-%d__%H-%M-%S") + "_unknown.avi"
+                                )
+                                fourcc = cv2.VideoWriter_fourcc(*"XVID")
+                                recording_path = os.path.join(
+                                    os.getcwd(), "recordings", recording_name
+                                )
+                                self.video_writer = cv2.VideoWriter(
+                                    recording_path, fourcc, 5.0, (640, 480)
+                                )
 
                             self.video_writer.write(frame)
-                            
+
             elif recording:
                 none_detected_counter += 1  # Increment the counter
 
-                if none_detected_counter >= 50:  # Stop recording after 50 frames without detection
+                if (
+                    none_detected_counter >= 50
+                ):  # Stop recording after 50 frames without detection
+                    print("Recording stopped")
 
                     print(log)
 
-                    print("Recording stopped")      
-                    
                     recording = False
                     self.video_writer.release()
                     self.video_writer = None
 
-                    create_log_thread = threading.Thread(target=LogsRepository.create_log, args=(log, ))
+                    create_log_thread = threading.Thread(
+                        target=LogsRepository.create_log, args=(log,)
+                    )
 
                     create_log_thread.start()
 
+                    if log.is_unknown:
+                        # Send notification Thread Request
 
-                    #Send notification Thread 
+                        print("sending unknown log")
 
-                #     upload_thread = threading.Thread(target=handle_upload, 
-                #         args=(
-                #             recording_name, 
-                #             recording_path, 
-                #             self.camera_loc, 
-                #             "Wisdom Dakoh", 
-                #             time_of_detection
-                #         )
-                #     )
+                        notification_thread = threading.Thread(
+                            target=send_notify_request,
+                            args=(str(self.camera_loc), str(log.time_of_detection)),
+                        )
 
-                #     upload_thread.start()
-
-            
-
-
-
-
-
-
+                        notification_thread.start()

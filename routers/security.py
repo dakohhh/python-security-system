@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 from client.response import CustomResponse
 from repository.logs import LogsRepository
 
-router = APIRouter(tags=["Security"], prefix="/securities")
+router = APIRouter(tags=["Security"], prefix="/security")
 
 
 
@@ -25,6 +25,15 @@ async def get_security_logs(request:Request, page_number:int, user:Users=Depends
 
 
 
+
+@router.post("/register")
+async def register_security_personnel(request:Request, user:Users=Depends(auth.get_current_user)):
+
+
+    
+
+
+    return CustomResponse("created security personnel")
 
 
 

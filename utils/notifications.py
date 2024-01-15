@@ -1,6 +1,8 @@
 import asyncio
+from typing import List
 from fastapi_mail import FastMail
 from client import send_sms
+from database.schema import Staffs
 from .mail import conf, get_notify_message_schema
 
 
@@ -12,7 +14,16 @@ async def notify_user_by_email(emails: list, camera: int, link: str, time_of_det
     asyncio.create_task(mail.send_message(message))
 
 
-async def notify_user_by_phone(phone_number, camera, time_of_detection):
+async def notify_users_by_phone(staffs:List[Staffs], camera, time_of_detection):
+
+    async def send_bulk_sms(phone_numbers: list, message: str):
+        tasks = [send_sms(phone_number, message) for phone_number in phone_numbers]
+        await asyncio.gather(*tasks)
+
+
+    phone_security_personnels = [staff.phone_number for staff in staffs if staff.is_security_personnel]
+
+
     message = f"""
     <p>Hello user, we have noticed some suspicious detections from camera {camera}</p> 
     <p>Details Of Detections</p>
@@ -23,6 +34,8 @@ async def notify_user_by_phone(phone_number, camera, time_of_detection):
     Time: {time_of_detection}
     <br>"""
 
-    response = send_sms(phone_number, message)
+    await send_bulk_sms(phone_security_personnels, message)
 
-    print(response)
+
+
+

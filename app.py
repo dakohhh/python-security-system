@@ -13,7 +13,7 @@ from routers.auth import router as auth
 
 # from routers.learn import router as learn
 from routers.security import router as security
-from response.response import CustomResponse
+from client.response import CustomResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from exceptions.custom_exception import *
@@ -69,11 +69,7 @@ app.add_exception_handler(errors.MongoEngineException, mongo_exception_handler)
 
 
 
-
-
-
 staffs = StaffRepository.get_all_staffs()
-print(staffs)
 
 camera = Camera(staffs)
 

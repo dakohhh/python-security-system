@@ -22,7 +22,7 @@ class Users(Document):
 
     def to_dict(self) -> dict:
         return {
-            "_id": str(self.id),
+            "id": str(self.id),
             "firstname": self.firstname,
             "lastname": self.lastname,
             "email": self.email, 
@@ -42,6 +42,10 @@ class Staffs(Document):
 
     has_data = BooleanField(required=True, default=False)
 
+    phone_number = StringField(required=True)
+
+    is_security_personnel = BooleanField(required=True, default=False)
+
     encodings = ListField(required=False, default=[])
 
     created_at = DateTimeField(default=datetime.now())
@@ -54,10 +58,11 @@ class Staffs(Document):
 
     def to_dict(self) -> dict:
         return {
-            "_id": str(self.id),
+            "id": str(self.id),
             "firstname": self.firstname,
             "lastname": self.lastname,
             "staff_id": self.staff_id,
+            "is_security_personnel": self.is_security_personnel,
             "created_at": str(self.created_at),
             "updated_at": str(self.updated_at)
         }
@@ -65,14 +70,6 @@ class Staffs(Document):
 
 
 
-class SecurityPersonels(Document):
-    firstname = StringField(required=True, min_lenght=3, max_length=50)
-
-    lastname = StringField(required=True, min_lenght=3, max_length=50)
-
-    phone_number = IntField(required=True)
-
-    pass
 
 class Logs(Document):
 
@@ -95,7 +92,7 @@ class Logs(Document):
 
     def to_dict(self) -> dict:
         return {
-            "_id": str(self.id),
+            "id": str(self.id),
             "name": self.name,
             "location": self.location,
             "created_at": str(self.created_at),
