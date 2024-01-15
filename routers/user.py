@@ -3,16 +3,18 @@ import asyncio
 from fastapi import Depends, Request, APIRouter, BackgroundTasks, status
 from fastapi.templating import Jinja2Templates
 from exceptions.custom_exception import BadRequestException
-from repository.students import StudentsRepository
+from repository.staff import StaffRepository
 from repository.users import UsersRepository
 from authentication.bearer import get_current_user
 from utils.image import ModelImage
-from utils.model import SecurityModel
-from validation.model import CreateStudent, NotifySchema, CreateUser
-from response.response import CustomResponse
-from database.crud import fetchall_documents, fetchone_document
+
+# from utils.image import ModelImage
+# from utils.model import SecurityModel
+from validation.model import CreateStaff, NotifySchema, CreateUser
+from client.response import CustomResponse
 from database.schema import Users
-from utils.notifications import notify_user_by_email
+
+# from utils.notifications import notify_user_by_email
 
 
 router = APIRouter(tags=["User"], prefix="/user")
@@ -39,11 +41,15 @@ async def notify_user(
     return CustomResponse("notified user successfully")
 
 
-@router.post("/create")
-async def add_user(
-    request: Request, user: CreateUser, admin: Users = Depends(get_current_user)
+from authentication.auth import auth
+
+
+@router.post("/signup")
+async def signup(
+    request: Request,
+    user: CreateUser,
 ):
-    if await fetchone_document(Users, email=user.email):
+    if await UsersRepository.get_user_by_email(email=user.email):
         raise BadRequestException("email already exist")
 
     new_user = await UsersRepository.create_user(user)
@@ -55,65 +61,51 @@ async def add_user(
     )
 
 
-@router.post("/create/student")
-async def create_student(
+@router.post("/create/staff")
+async def create_staff(
     request: Request,
     background_task: BackgroundTasks,
-    student: CreateStudent = Depends(),
-    admin: Users = Depends(get_current_user),
+    staff: CreateStaff = Depends(),
+    admin: Users = Depends(auth.get_current_user),
 ):
-    if await StudentsRepository.does_matric_exist(student.matric_no):
-        raise BadRequestException(f"matric no '{student.matric_no}' already exists")
+    if await StaffRepository.does_staff_id_exist(staff.staff_id):
+        raise BadRequestException(f"staff id '{staff.staff_id}' already exists")
 
-    new_student = asyncio.create_task(StudentsRepository.create_student(student))
+    new_staff = asyncio.create_task(StaffRepository.create_staff(staff))
 
-    images = ModelImage(student.images)
 
-    images.validate_images()
+    if len(staff.images) != 9:
+        raise BadRequestException("must be exactly 5 images to be fitted")
 
-    new_student = await new_student
+    model_images = ModelImage(staff.images)
 
-    images.save_cropped_images(str(new_student.id))
+    model_images.validate_images()
+
+    new_staff = await new_staff
+
+    new_staff.encodings = model_images.get_face_encodings()
+
+    new_staff.save()
+
 
     return CustomResponse(
         "created student successfully",
         status=status.HTTP_201_CREATED,
-        data=new_student.to_dict(),
+        data=None,
     )
-
-
-@router.patch("/blacklist/{student_id}")
-async def blacklist_user(
-    request: Request, student_id: str, admin: Users = Depends(get_current_user)
-):
-    await StudentsRepository.blacklist_student(student_id)
-
-    return CustomResponse("blacklisted student Successfully", status=status.HTTP_200_OK)
-
-
-@router.patch("/unblacklist/{student_id}")
-async def unblacklist_student(
-    request: Request, student_id: str, admin: Users = Depends(get_current_user)
-):
-    await StudentsRepository.unblacklist_student(student_id)
-
-    return CustomResponse(
-        "unblacklisted student successfully", status=status.HTTP_200_OK
-    )
-
 
 
 @router.get("/students_have_data")
-async def student_have_data(request:Request, admin:Users=Depends(get_current_user)):
-
+async def student_have_data(request: Request, admin: Users = Depends(get_current_user)):
     path = os.path.join(os.getcwd(), "models/class_dict.json")
 
     class_dict = SecurityModel.get_class_dict(path)
 
     print(class_dict)
 
-
     return CustomResponse("have student data condition", data=None)
+
+
 
 
 

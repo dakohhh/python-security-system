@@ -1,5 +1,5 @@
 from datetime import datetime
-from mongoengine import Document, StringField, IntField, BooleanField, EmailField, DateTimeField, ReferenceField
+from mongoengine import Document, StringField, IntField, BooleanField, EmailField, DateTimeField, ReferenceField, ListField
 
 
 
@@ -42,12 +42,14 @@ class Staffs(Document):
 
     has_data = BooleanField(required=True, default=False)
 
+    encodings = ListField(required=False, default=[])
+
     created_at = DateTimeField(default=datetime.now())
 
     updated_at = DateTimeField(default=datetime.now())
 
 
-    meta = {"collection": "students"}
+    meta = {"collection": "staffs"}
 
 
     def to_dict(self) -> dict:
@@ -74,11 +76,13 @@ class SecurityPersonels(Document):
 
 class Logs(Document):
 
-    staff_detected = ReferenceField(Staffs, required=False)
+    staff_detected = ReferenceField(Staffs, required=False, default=None)
 
     location = StringField(required=True)
 
     time_of_detection = DateTimeField(required=True)
+
+    is_unknown = BooleanField(required=True, default=False)
 
     created_at = DateTimeField(default=datetime.now())
 
@@ -86,14 +90,14 @@ class Logs(Document):
 
 
 
-    meta = {"collection": "recordings", "strict": False}
+    meta = {"collection": "logs", "strict": False}
 
 
     def to_dict(self) -> dict:
         return {
             "_id": str(self.id),
             "name": self.name,
-            "url": self.url,
+            "location": self.location,
             "created_at": str(self.created_at),
             "updated_at": str(self.updated_at)
         }

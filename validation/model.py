@@ -34,29 +34,20 @@ class CreateUser(BaseModel):
             raise BadRequestException(str(e))
 
 
-class CreateStudent:
+class CreateStaff:
     def __init__(
         self,
         firstname: str = Form(...),
         lastname: str = Form(...),
-        matric_no:str = Form(...),
+        staff_id:str = Form(...),
         images: List[UploadFile] = File(...),
 
     ):
         self.firstname = firstname
         self.lastname = lastname
         self.images = images
-        self.matric_no = self.validate_matric(matric_no)
+        self.staff_id = staff_id
 
-    def validate_matric(self, v):
-
-        try:
-            if len(v) != 11: 
-                raise BadRequestException("matric no must be lenght of 10")
-            return int(v)
-        
-        except ValueError as e:
-            raise BadRequestException(str(e))
 
 
 

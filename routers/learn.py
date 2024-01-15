@@ -7,11 +7,11 @@ from fastapi import Depends, Request, APIRouter, UploadFile, File, Form, Backgro
 from database.crud import fetchone_document
 from authentication.bearer import get_current_user
 from database.schema import Students, Users
-from repository.students import StudentsRepository
+from repository.staff import StudentsRepository
 from exceptions.custom_exception import BadRequestException, NotFoundException
 from utils.file import save_image_file_to_student
 from utils.model import SecurityModel
-from response.response import CustomResponse
+from client.response import CustomResponse
 from utils.validate import verify_image, get_object_id
 
 

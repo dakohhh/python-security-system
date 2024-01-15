@@ -56,7 +56,7 @@ class Upload():
 
 class SecuritySystemUpload(Upload):
 
-	private_name = "python_security"
+	private_name = "security_campus"
 
 	def __init__(self, file:Union[str, Any], file_name:str):
 

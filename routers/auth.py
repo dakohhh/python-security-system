@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, status
 from authentication.auth import auth
 from database.schema import Users
 from repository.users import UsersRepository
-from response.response import CustomResponse
+from client.response import CustomResponse
 from validation.model import CreateUser, LoginSchema
 from exceptions.custom_exception import BadRequestException
 
