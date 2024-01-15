@@ -4,31 +4,18 @@ from typing import List
 from utils.interface import CreateLog
 
 
-# class Logs(Document):
-
-#     staff_detected = ReferenceField(Staffs, required=False)
-
-#     location = StringField(required=True)
-
-#     time_of_detection = DateTimeField(required=True)
-
-#     created_at = DateTimeField(default=datetime.now())
-
-#     updated_at = DateTimeField(default=datetime.now())
-
 
 class LogsRepository:
     @staticmethod
-    async def pagination(page_number, per_page):
+    async def get_all_logs(page_number, per_page) -> List[Logs]:
         offset = (page_number - 1) * per_page
 
         query: List[Logs] = (
-            Logs.objects().order_by("-updated_at").skip(offset).limit(per_page)
+            Logs.objects().order_by("-created_at").skip(offset).limit(per_page)
         )
 
-        recordings = [recording.to_dict() for recording in query]
-
-        return recordings
+        return query
+        
 
     @staticmethod
     def create_log(log: CreateLog):

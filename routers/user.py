@@ -25,12 +25,14 @@ async def notify_user(
 ):
     security_staffs = await StaffRepository.get_security_personnel_staffs()
 
-    # background_task.add_task(
-    #     notify_users_by_phone,
-    #     staffs=security_staffs,
-    #     camera=notify.camera,
-    #     time_of_detection=notify.time_of_detection,
-    # )
+    print("start seding")
+
+    background_task.add_task(
+        notify_users_by_phone,
+        staffs=security_staffs,
+        camera=notify.camera,
+        time_of_detection=notify.time_of_detection,
+    )
 
     return CustomResponse("notified user successfully")
 
@@ -86,38 +88,3 @@ async def create_staff(
         data=None,
     )
 
-
-@router.get("/students_have_data")
-async def student_have_data(request: Request, admin: Users = Depends(get_current_user)):
-    path = os.path.join(os.getcwd(), "models/class_dict.json")
-
-    class_dict = SecurityModel.get_class_dict(path)
-
-    print(class_dict)
-
-    return CustomResponse("have student data condition", data=None)
-
-
-# @router.get("/get_users")
-# async def get_users(request:Request):
-
-#     get_user_task = asyncio.create_task(fetchall(Users))
-
-#     class_list = asyncio.create_task(get_class_dict())
-
-#     users = [user.to_dict() for user in await get_user_task]
-
-#     class_list = await class_list
-
-#     needs_train = False
-
-#     if len(users) > len(class_list):
-
-#         needs_train = True
-
-#     print(needs_train)
-
-
-#     context = {"request":request, "users":users, "needs_train": needs_train}
-
-#     return templates.TemplateResponse("view.html", context)

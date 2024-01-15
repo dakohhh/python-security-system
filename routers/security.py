@@ -9,40 +9,24 @@ from repository.logs import LogsRepository
 router = APIRouter(tags=["Security"], prefix="/security")
 
 
-
-
-
 @router.get("/logs")
-async def get_security_logs(request:Request, page_number:int, user:Users=Depends(auth.get_current_user)):
+async def get_security_logs(
+    request: Request,
+    page_number: int,
+    per_page:int,
+    user: Users = Depends(auth.get_current_user),
+):
+    logs = [
+        log.to_dict()
+        for log in await LogsRepository.get_all_logs(page_number, per_page)
+    ]
 
-    from pprint import pprint
-
-    pprint(user.to_dict())
-    # return CustomResponse("get all security videos", status.HTTP_200_OK, data=data)
-
-
-    return None
-
-
+    context = {"logs": logs}
+    return CustomResponse("get all security videos", status.HTTP_200_OK, data=context)
 
 
 @router.post("/register")
-async def register_security_personnel(request:Request, user:Users=Depends(auth.get_current_user)):
-
-
-    
-
-
+async def register_security_personnel(
+    request: Request, user: Users = Depends(auth.get_current_user)
+):
     return CustomResponse("created security personnel")
-
-
-
-
-
-
-
-
-
-    
-
-

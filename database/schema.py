@@ -93,7 +93,7 @@ class Logs(Document):
     def to_dict(self) -> dict:
         return {
             "id": str(self.id),
-            "name": self.name,
+            "staff_detected": self.staff_detected.to_dict() if self.staff_detected else self.staff_detected ,
             "location": self.location,
             "created_at": str(self.created_at),
             "updated_at": str(self.updated_at)

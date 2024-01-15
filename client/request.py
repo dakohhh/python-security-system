@@ -6,7 +6,7 @@ class CustomHttpClient:
     def __init__(self, base_url, headers=None):
         self.base_url = base_url
         self.headers = headers or {}
-        self.timeout = 30
+        self.timeout = 120
 
     def get(self, path=None, params=None):
         url = f"{self.base_url}{path}" if path is not None else f"{self.base_url}"
