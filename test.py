@@ -1,9 +1,11 @@
 import cv2
-import tensorflow
 
 
 print(cv2)
-print(tensorflow)
 
 
 "brodztivvgnzpdlt"
+
+
+
+# opencv-python-headless = "4.5.4.60"

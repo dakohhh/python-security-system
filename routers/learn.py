@@ -15,6 +15,8 @@ from client.response import CustomResponse
 from utils.validate import verify_image, get_object_id
 
 
+
+
 router = APIRouter(tags=["Learn"], prefix="/learn")
 
 
