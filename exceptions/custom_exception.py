@@ -1,4 +1,5 @@
 from fastapi import Request, status
+from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from mongoengine.errors import MongoEngineException
 
@@ -116,3 +117,6 @@ async def mongo_exception_handler(request: Request, exception: MongoEngineExcept
             "success": False
         },
     )
+
+
+
