@@ -267,13 +267,27 @@ marshmallow = ">=3.18.0,<4.0.0"
 typing-inspect = ">=0.4.0,<1"
 
 [[package]]
-name = "dlib"
+name = "dlib-bin"
 version = "19.24.2"
 description = "A toolkit for making real world machine learning and data analysis applications"
 optional = false
 python-versions = "*"
 files = [
-    {file = "dlib-19.24.2.tar.gz", hash = "sha256:2d4f618073bc6b297aa01ce05595a2d32b5b37e69cafd99f796e77346f6dcfb5"},
+    {file = "dlib_bin-19.24.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:6ca15844224fe6886e4fbf8a125c7515d1f529801ef8ac816e74029d320ddce3"},
+    {file = "dlib_bin-19.24.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:69c84a031f2cf0278bcdeb480ed696d8381d6617f70db0008dd20806b801cc09"},
+    {file = "dlib_bin-19.24.2-cp310-cp310-win_amd64.whl", hash = "sha256:1d57fd043d49b55a766cfc5e6857975a58f7a23c2d8d978f231d40c2babc83c5"},
+    {file = "dlib_bin-19.24.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:80413a86db4f50e5985af099b37f45450ce48643281283634a6f3b00154130a3"},
+    {file = "dlib_bin-19.24.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3af318ffb4c1a56f005077bc6e224fcb22652be78aa2d8d2087a96c7e41d336d"},
+    {file = "dlib_bin-19.24.2-cp311-cp311-win_amd64.whl", hash = "sha256:85a6a7c0b45f86c88c14f8d31d85c892ed62e7913ad9d38d97b05dd612b2fa14"},
+    {file = "dlib_bin-19.24.2-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:a430cb121f8cfd499290d3774a28a20490130c63f222021ef6970f41a635964e"},
+    {file = "dlib_bin-19.24.2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ce5770e6549c46d8be2631e47ecbb9950f209d1240f60a8aea9d47823fc73101"},
+    {file = "dlib_bin-19.24.2-cp37-cp37m-win_amd64.whl", hash = "sha256:3fb57ba6032e881a33476d794ff1e41d3f5cd8ade19074cce374ee2c04b3614f"},
+    {file = "dlib_bin-19.24.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:b925603a8b3a643b44eaa5bbd7d79257f0b47480227fec77bac86f3167296960"},
+    {file = "dlib_bin-19.24.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b7295292265cfb82787ac1b1a8b71be67e64dd712ca3d194b1d2cc8e370ee534"},
+    {file = "dlib_bin-19.24.2-cp38-cp38-win_amd64.whl", hash = "sha256:2b5d0bd8a2a765a95c1bdf3213e6a9dddb346f2b68487eabb7d91a541ad04913"},
+    {file = "dlib_bin-19.24.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:116b4da0f9278ac741e9d354d59675443c9839bb1094c1d0bbcb830c54f0160e"},
+    {file = "dlib_bin-19.24.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ba88d365be3d2e458e7f2f4aef02ca07efd3bd24be7ec9e3180c8381cda48c84"},
+    {file = "dlib_bin-19.24.2-cp39-cp39-win_amd64.whl", hash = "sha256:3ac61a810aa963510dc6dba550750dbb5224fcb02072e2663888732f4fae4619"},
 ]
 
 [[package]]
@@ -325,22 +339,26 @@ files = [
 test = ["pytest (>=6)"]
 
 [[package]]
-name = "face-recognition"
-version = "1.3.0"
+name = "face_recognition"
+version = "1.4.0"
 description = "Recognize faces from Python or from the command line"
 optional = false
 python-versions = "*"
-files = [
-    {file = "face_recognition-1.3.0-py2.py3-none-any.whl", hash = "sha256:c543e91c8cfbf24d19db04e511ebbddcb23894bcee510133729ee78e9f4b5e83"},
-    {file = "face_recognition-1.3.0.tar.gz", hash = "sha256:5e5efdd1686aa566af0d3cc1313b131e4b197657a8ffd03669e6d3fad92705ec"},
-]
+files = []
+develop = false
 
 [package.dependencies]
 Click = ">=6.0"
-dlib = ">=19.7"
-face-recognition-models = ">=0.3.0"
+dlib-bin = ">=19.24.2"
+face_recognition_models = ">=0.3.0"
 numpy = "*"
 Pillow = "*"
+
+[package.source]
+type = "git"
+url = "https://github.com/dakohhh/face_recognition.git"
+reference = "master"
+resolved_reference = "0699336e0c0145bc6683130c8689213461d5dd19"
 
 [[package]]
 name = "face-recognition-models"
@@ -1408,4 +1426,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.11"
-content-hash = "033f5a2b3993cf776a5e6a58c64545280910aa6c2183aa4972946738065e71af"
+content-hash = "e9bd1528f72b1c920ddd99650723091600c9409b5d22b576b9819e0ad5da5931"

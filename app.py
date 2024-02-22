@@ -1,11 +1,8 @@
-from operator import imod
 import os
-from typing import List
 import certifi
 from fastapi import FastAPI, File, UploadFile
 from mongoengine import connect, errors
 import numpy as np
-from scipy.datasets import face
 from database.schema import Staffs
 from repository.staff import StaffRepository
 from routers.user import router as user
@@ -29,6 +26,7 @@ load_dotenv()
 
 CERTIFICATE = os.path.join(os.path.dirname(certifi.__file__), "cacert.pem")
 
+print(os.getenv("DEVELOPMENT"))
 
 if os.getenv("DEVELOPMENT"):
     connect(host=os.getenv("MONGODB_URL"))
