@@ -1,6 +1,5 @@
 import os
 import asyncio
-from tkinter import N
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
 from dotenv import load_dotenv
 
