@@ -70,7 +70,6 @@ staffs = StaffRepository.get_all_staffs()
 
 camera = Camera(staffs)
 
-camera.arm()
 
 
 @app.patch("/security/arm")
