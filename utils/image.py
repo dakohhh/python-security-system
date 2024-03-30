@@ -1,6 +1,7 @@
 import os
 import cv2
 import typing
+from typing import List
 import face_recognition
 from fastapi import UploadFile
 from PIL import UnidentifiedImageError
@@ -8,29 +9,40 @@ from exceptions.custom_exception import BadRequestException
 from utils.file import save_image_file_to_student
 
 
-class ModelImage:
+class ProcessImages:
     def __init__(self, images: typing.List[UploadFile]):
         self.images = images
 
-    def validate_images(self):
+        self.validated_images: List[ModelImage] = []
+
+    def validate(self):
         try:
-            for img in self.images:
-                image = face_recognition.load_image_file(img.file)
+            for image in self.images:
+
+                model_image = ModelImage(image)
+
+                self.validated_images.append(model_image)
 
         except UnidentifiedImageError as e:
-            raise BadRequestException(f"invalid image or image type: '{img.filename}'")
+            raise BadRequestException(
+                f"invalid image or image type: '{image.filename}'"
+            )
 
     def get_face_encodings(self) -> typing.List:
         encodings = []
 
-        for image in self.images:
-            known_image = face_recognition.load_image_file(image.file)
+        for I in self.validated_images:
 
-            encoding = face_recognition.face_encodings(known_image)[0]
+            encodings = face_recognition.face_encodings(I.image)
 
-            encodings.append(encoding)
+            if not encodings:
+                raise BadRequestException(
+                    f"No face found in image {I.filename}, please try another image"
+                )
 
-        return encodings
+            encodings.append(encodings[0])
+
+        return
 
     def get_face_location(self, image: UploadFile):
         image = face_recognition.load_image_file(image.file)
@@ -51,4 +63,10 @@ class ModelImage:
         cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
 
         return cropped_image
-    
+
+
+class ModelImage:
+    def __init__(self, file: UploadFile) -> None:
+
+        self.image = face_recognition.load_image_file(file.file)
+        self.filename = file.filename

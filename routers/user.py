@@ -7,7 +7,7 @@ from exceptions.custom_exception import BadRequestException
 from repository.staff import StaffRepository
 from repository.users import UsersRepository
 from authentication.bearer import get_current_user
-from utils.image import ModelImage
+from utils.image import ProcessImages
 from utils.notifications import notify_user_by_email, notify_users_by_phone
 from validation.model import CreateStaff, NotifySchema, CreateUser
 from client.response import CustomResponse
@@ -72,9 +72,9 @@ async def create_staff(
     if len(staff.images) != 9:
         raise BadRequestException("must be exactly 9 images to be fitted")
 
-    model_images = ModelImage(staff.images)
+    model_images = ProcessImages(staff.images)
 
-    model_images.validate_images()
+    model_images.validate()
 
     new_staff = await new_staff
 

@@ -40,7 +40,6 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000/"
-    "http://127.0.0.1:5500/",
 ]
 
 app.add_middleware(
@@ -71,7 +70,6 @@ staffs = StaffRepository.get_all_staffs()
 
 camera = Camera(staffs)
 
-camera.arm()
 
 
 @app.patch("/security/arm")
