@@ -39,7 +39,11 @@ app = FastAPI()
 
 
 origins = [
-    "http://localhost:3000/"
+
+    "http://localhost:3009",
+
+    "http://127.0.0.1:5500",
+
 ]
 
 app.add_middleware(
@@ -69,7 +73,6 @@ app.add_exception_handler(errors.MongoEngineException, mongo_exception_handler)
 staffs = StaffRepository.get_all_staffs()
 
 camera = Camera(staffs)
-
 
 
 @app.patch("/security/arm")
