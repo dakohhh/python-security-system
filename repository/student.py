@@ -33,6 +33,7 @@ class StudentRepository:
         pipeline = [
             {
                 "$project": {
+                    "id": "$_id",
                     "firstname": 1,
                     "lastname": 1,
                     "matric_no": 1,

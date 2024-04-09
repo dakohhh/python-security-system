@@ -1,4 +1,6 @@
 import os
+import json
+
 import asyncio
 from typing import List
 from fastapi import (
@@ -18,6 +20,9 @@ from repository.users import UsersRepository
 from repository.security import SecurityPersonnelRepository
 from authentication.bearer import get_current_user
 from utils.image import ProcessImages
+from serializers.student import AllStudentSerializer
+from serializers.security_personnel import AllSecurityPersonnelSerializer
+
 from utils.notifications import notify_user_by_email, notify_users_by_phone
 from validation.model import (
     CreateStudent,
@@ -147,35 +152,39 @@ async def create_security_personnel(
     )
 
 
-
-
-
 @router.get("/students")
 async def get_students(
     request: Request,
     admin: Users = Depends(auth.get_current_user),
 ):
-    
-    from pydantic import BaseModel
 
-    class TestList(BaseModel):
-        testing: List[str]
+    students = await StudentRepository.get_all_students_without_encodings()
 
-    
-    test_list = TestList(testing=["wisdom", "victor"])
-
-    print(test_list.model_dump())
-    
-    # from pymongo.command_cursor import CommandCursor
-    
-    # students: CommandCursor = await StudentRepository.get_all_students_without_encodings()
-
-    # print(list(students))
-
-    # context = {"students": students.to_dict()}
+    serialize_students = AllStudentSerializer(students=list(students)).model_serialize
 
     return CustomResponse(
         "created student successfully",
         status=status.HTTP_200_OK,
-        data=None,
+        data=serialize_students,
+    )
+
+
+@router.get("/security_personnel")
+async def get_security_personnel(
+    request: Request,
+    admin: Users = Depends(auth.get_current_user),
+):
+
+    security_personnels = (
+        await SecurityPersonnelRepository.get_all_security_personnel_without_encoding()
+    )
+
+    serialize_security_personnels = AllSecurityPersonnelSerializer(
+        security_personnels=list(security_personnels)
+    ).model_serialize
+
+    return CustomResponse(
+        "created security personnel successfully",
+        status=status.HTTP_200_OK,
+        data=serialize_security_personnels,
     )

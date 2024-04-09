@@ -31,6 +31,28 @@ class SecurityPersonnelRepository:
         query = SecurityPersonnel.objects()
 
         return query
+    
+
+    @staticmethod
+    async def get_all_security_personnel_without_encoding():
+        pipeline = [
+            {
+                "$project": {
+                    "id": "$_id",
+                    "firstname": 1,
+                    "lastname": 1,
+                    "matric_no": 1,
+                    "staff_id": 1,
+                    "phone_number": 1,
+                    "created_at": 1,
+                    "updated_at": 1,
+                }
+            }
+        ]
+
+        query = SecurityPersonnel.objects.aggregate(*pipeline)
+
+        return query
 
     @staticmethod
     async def get_security_personnel() -> typing.List[SecurityPersonnel]:
