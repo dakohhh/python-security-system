@@ -6,7 +6,7 @@ import threading
 import numpy as np
 import face_recognition
 from client import send_notify_request
-from database.schema import Staffs
+from database.schema import UniversityMember
 from utils.interface import CreateLog
 from repository.logs import LogsRepository
 from utils.func import threshold_compare
@@ -20,9 +20,9 @@ class Camera:
 
     FRAME_THICKNESS = 5
 
-    def __init__(self, staffs):
+    def __init__(self, members):
         self.armed = False
-        self.staffs: List[Staffs] = staffs
+        self.members: List[UniversityMember] = members
         self.camera_thread = None
         self.camera_loc = 0
 
@@ -71,19 +71,19 @@ class Camera:
                 ) in (
                     unknown_faces_image_encodings
                 ):  # Iterate over each of the encoded faces detected on frame:
-                    for staff in self.staffs:
+                    for member in self.members:
                         results = face_recognition.compare_faces(
-                            np.array(staff.encodings), unknown_face_encoding
+                            np.array(member.encodings), unknown_face_encoding
                         )
 
                         if threshold_compare(results) >= self.threshold:
-                            # Log Time of detection for staff
+                            # Log Time of detection for member
 
-                            print("Staff detected")
+                            print("Member detected")
 
                             now = datetime.now()
 
-                            log = CreateLog(staff, str(self.camera_loc), False, now)
+                            log = CreateLog(member, str(self.camera_loc), False, now)
 
                             # create_log_thread = threading.Thread(target=LogsRepository.create_log, args=(log, ))
 
@@ -93,7 +93,7 @@ class Camera:
                             if not recording:
                                 recording = True
                                 recording_name = (
-                                    now.strftime("%Y-%m-%d__%H-%M-%S") + "_staff.avi"
+                                    now.strftime("%Y-%m-%d__%H-%M-%S") + "_member.avi"
                                 )
                                 fourcc = cv2.VideoWriter_fourcc(*"XVID")
                                 recording_path = os.path.join(

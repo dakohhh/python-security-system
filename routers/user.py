@@ -1,15 +1,30 @@
 import os
 import asyncio
 from typing import List
-from fastapi import Depends, Request, APIRouter, BackgroundTasks, Security, status
+from fastapi import (
+    Depends,
+    File,
+    Request,
+    APIRouter,
+    BackgroundTasks,
+    Security,
+    UploadFile,
+    status,
+)
 from fastapi.templating import Jinja2Templates
 from exceptions.custom_exception import BadRequestException
-from repository.staff import StaffRepository
+from repository.student import StudentRepository
 from repository.users import UsersRepository
+from repository.security import SecurityPersonnelRepository
 from authentication.bearer import get_current_user
 from utils.image import ProcessImages
 from utils.notifications import notify_user_by_email, notify_users_by_phone
-from validation.model import CreateStaff, NotifySchema, CreateUser
+from validation.model import (
+    CreateStudent,
+    NotifySchema,
+    CreateUser,
+    CreateSecurityPersonnel,
+)
 from client.response import CustomResponse
 from database.schema import Users
 
@@ -23,9 +38,9 @@ templates = Jinja2Templates(directory="templates")
 async def notify_user(
     request: Request, notify: NotifySchema, background_task: BackgroundTasks
 ):
-    security_staffs = await StaffRepository.get_security_personnel_staffs()
+    security_staffs = await StudentRepository.get_security_personnel_staffs()
 
-    print("start seding")
+    print("start sending")
 
     background_task.add_task(
         notify_users_by_phone,
@@ -57,34 +72,110 @@ async def signup(
     )
 
 
-@router.post("/create/staff")
-async def create_staff(
+@router.post("/create/student")
+async def create_student(
     request: Request,
     background_task: BackgroundTasks,
-    staff: CreateStaff = Depends(),
+    student: CreateStudent = Depends(),
     admin: Users = Depends(auth.get_current_user),
 ):
-    if await StaffRepository.does_staff_id_exist(staff.staff_id):
-        raise BadRequestException(f"staff id '{staff.staff_id}' already exists")
 
-    new_staff = asyncio.create_task(StaffRepository.create_staff(staff))
+    if await StudentRepository.does_matric_no_exists(student.matric_no):
+        raise BadRequestException(f"matric no '{student.matric_no}' already exists")
 
-    if len(staff.images) != 9:
+    new_student = asyncio.create_task(StudentRepository.create_student(student))
+
+    if len(student.images) != 9:
         raise BadRequestException("must be exactly 9 images to be fitted")
 
-    model_images = ProcessImages(staff.images)
+    model_images = ProcessImages(student.images)
 
     model_images.validate()
 
-    new_staff = await new_staff
+    new_student = await new_student
 
-    new_staff.encodings = model_images.get_face_encodings()
+    new_student.encodings = model_images.get_face_encodings()
 
-    new_staff.save()
+    new_student.save()
+
+    context = {"student": new_student.to_dict()}
 
     return CustomResponse(
         "created student successfully",
         status=status.HTTP_201_CREATED,
-        data=None,
+        data=context,
     )
 
+
+@router.post("/create/security_personnel")
+async def create_security_personnel(
+    request: Request,
+    security_personnel: CreateSecurityPersonnel = Depends(),
+    admin: Users = Depends(auth.get_current_user),
+):
+
+    if await SecurityPersonnelRepository.does_staff_id_exists(
+        security_personnel.staff_id
+    ):
+        raise BadRequestException(
+            f"staff id '{security_personnel.staff_id}' already exists"
+        )
+
+    new_security_personnel = asyncio.create_task(
+        SecurityPersonnelRepository.create_security_personnel(security_personnel)
+    )
+
+    if len(security_personnel.images) != 9:
+        raise BadRequestException("must be exactly 9 images to be fitted")
+
+    model_images = ProcessImages(security_personnel.images)
+
+    model_images.validate()
+
+    new_security_personnel = await new_security_personnel
+
+    new_security_personnel.encodings = model_images.get_face_encodings()
+
+    new_security_personnel.save()
+
+    context = {"security_personnel": new_security_personnel.to_dict()}
+
+    return CustomResponse(
+        "created security personnel successfully",
+        status=status.HTTP_201_CREATED,
+        data=context,
+    )
+
+
+
+
+
+@router.get("/students")
+async def get_students(
+    request: Request,
+    admin: Users = Depends(auth.get_current_user),
+):
+    
+    from pydantic import BaseModel
+
+    class TestList(BaseModel):
+        testing: List[str]
+
+    
+    test_list = TestList(testing=["wisdom", "victor"])
+
+    print(test_list.model_dump())
+    
+    # from pymongo.command_cursor import CommandCursor
+    
+    # students: CommandCursor = await StudentRepository.get_all_students_without_encodings()
+
+    # print(list(students))
+
+    # context = {"students": students.to_dict()}
+
+    return CustomResponse(
+        "created student successfully",
+        status=status.HTTP_200_OK,
+        data=None,
+    )

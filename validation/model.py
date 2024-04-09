@@ -6,6 +6,7 @@ from email_validator import validate_email, EmailNotValidError
 from exceptions.custom_exception import BadRequestException
 
 
+
 class TokenData(BaseModel):
     username: str
     user_id: str
@@ -32,22 +33,35 @@ class CreateUser(BaseModel):
             raise BadRequestException(str(e))
 
 
-class CreateStaff:
+class CreateStudent:
     def __init__(
         self,
         firstname: str = Form(...),
         lastname: str = Form(...),
-        staff_id: str = Form(...),
-        phone_number:str = Form(...),
-        is_security_personnel:bool = Form(...),
+        matric_no: int = Form(...),
         images: List[UploadFile] = File(...),
     ):
         self.firstname = firstname
         self.lastname = lastname
         self.images = images
-        self.is_security_personnel = is_security_personnel
-        self.phone_number = phone_number
+        self.matric_no = matric_no
+
+
+
+class CreateSecurityPersonnel:
+    def __init__(
+        self,
+        firstname: str = Form(...),
+        lastname: str = Form(...),
+        staff_id: int = Form(...),
+        phone_number: str= Form(...),
+        images: List[UploadFile] = File(...),
+    ):
+        self.firstname = firstname
+        self.lastname = lastname
+        self.images = images
         self.staff_id = staff_id
+        self.phone_number= phone_number
 
 
 class LoginSchema(BaseModel):
@@ -70,10 +84,3 @@ class LoginSchema(BaseModel):
 class NotifySchema(BaseModel):
     camera: str
     time_of_detection: str
-
-
-class CreateSecurityPersonel(BaseModel):
-    firstname: str
-    lastname: str
-    location: str
-    phone_number: str
