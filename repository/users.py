@@ -5,8 +5,6 @@ from utils.validate import get_object_id
 
 
 
-
-
 class UsersRepository:
     @staticmethod
     async def create_user(user: CreateUser) -> Users:

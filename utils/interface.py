@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 # from database.schema import Students
 from pydantic import BaseModel, validator
-from database.schema import Staffs
+from database.schema import  Student
 from exceptions.custom_exception import BadRequestException
 
 
@@ -23,15 +23,11 @@ class Token(BaseModel):
 @dataclass
 class CreateLog:
 
-    staff_detected : Staffs 
+    student_detected : Student 
     location: str
     is_unknown: bool
     time_of_detection: datetime
 
-
-
-
-    pass
 
 
 @dataclass_json

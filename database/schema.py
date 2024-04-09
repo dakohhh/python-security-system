@@ -1,6 +1,14 @@
 from datetime import datetime
-from mongoengine import Document, StringField, IntField, BooleanField, EmailField, DateTimeField, ReferenceField, ListField
-
+from mongoengine import (
+    Document,
+    StringField,
+    IntField,
+    BooleanField,
+    EmailField,
+    DateTimeField,
+    ReferenceField,
+    ListField,
+)
 
 
 class Users(Document):
@@ -19,32 +27,24 @@ class Users(Document):
 
     meta = {"collection": "users", "strict": False}
 
-
     def to_dict(self) -> dict:
         return {
             "id": str(self.id),
             "firstname": self.firstname,
             "lastname": self.lastname,
-            "email": self.email, 
+            "email": self.email,
             "created_at": str(self.created_at),
-            "updated_at": str(self.updated_at)
+            "updated_at": str(self.updated_at),
         }
 
 
-
-class Staffs(Document):
+class UniversityMember(Document):
 
     firstname = StringField(required=True, min_lenght=3, max_length=50)
 
     lastname = StringField(required=True, min_lenght=3, max_length=50)
 
-    staff_id = StringField(required=True, default="1234")
-
     has_data = BooleanField(required=True, default=False)
-
-    phone_number = StringField(required=True)
-
-    is_security_personnel = BooleanField(required=True, default=False)
 
     encodings = ListField(required=False, default=[])
 
@@ -52,28 +52,60 @@ class Staffs(Document):
 
     updated_at = DateTimeField(default=datetime.now())
 
+    meta = {"collection": "university_member", "strict": False, "allow_inheritance": True}
 
-    meta = {"collection": "staffs"}
+    def to_dict(self):
 
-
-    def to_dict(self) -> dict:
         return {
             "id": str(self.id),
             "firstname": self.firstname,
             "lastname": self.lastname,
-            "staff_id": self.staff_id,
-            "is_security_personnel": self.is_security_personnel,
             "created_at": str(self.created_at),
-            "updated_at": str(self.updated_at)
+            "updated_at": str(self.updated_at),
         }
-    
 
 
+class Student(UniversityMember):
+
+    matric_no = IntField(required=True)
+
+    def to_dict(self) -> dict:
+
+        klass = super().to_dict()
+
+        klass.update({"matric_no": self.matric_no})
+
+        return klass
+
+
+class SecurityPersonnel(UniversityMember):
+
+    staff_id = IntField(required=True)
+
+    phone_number = StringField(required=True)
+
+    is_security_personnel = BooleanField(required=True, default=True)
+
+    meta = {"strict": False}
+
+    def to_dict(self) -> dict:
+
+        klass = super().to_dict()
+
+        klass.update(
+            {
+                "staff_id": self.staff_id,
+                "phone_number": self.phone_number,
+                "is_security_personnel": self.is_security_personnel,
+            }
+        )
+
+        return klass
 
 
 class Logs(Document):
 
-    staff_detected = ReferenceField(Staffs, required=False, default=None)
+    student_detected: Student = ReferenceField(Student, required=False, default=None)
 
     location = StringField(required=True)
 
@@ -85,36 +117,17 @@ class Logs(Document):
 
     updated_at = DateTimeField(default=datetime.now())
 
-
-
     meta = {"collection": "logs", "strict": False}
-
 
     def to_dict(self) -> dict:
         return {
             "id": str(self.id),
-            "staff_detected": self.staff_detected.to_dict() if self.staff_detected else self.staff_detected ,
+            "staff_detected": (
+                self.student_detected.to_dict()
+                if self.student_detected
+                else self.student_detected
+            ),
             "location": self.location,
             "created_at": str(self.created_at),
-            "updated_at": str(self.updated_at)
+            "updated_at": str(self.updated_at),
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

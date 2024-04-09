@@ -1,3 +1,4 @@
+from operator import le
 import os
 import cv2
 import typing
@@ -33,16 +34,16 @@ class ProcessImages:
 
         for I in self.validated_images:
 
-            encodings = face_recognition.face_encodings(I.image)
+            encoding = face_recognition.face_encodings(I.image)
 
-            if not encodings:
+            if not encoding:
                 raise BadRequestException(
                     f"No face found in image {I.filename}, please try another image"
                 )
 
-            encodings.append(encodings[0])
+            encodings.append(encoding[0])
 
-        return
+        return encodings
 
     def get_face_location(self, image: UploadFile):
         image = face_recognition.load_image_file(image.file)
