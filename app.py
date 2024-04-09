@@ -44,6 +44,8 @@ origins = [
 
     "http://127.0.0.1:5500",
 
+    "https://mtu-security.vercel.app",
+
 ]
 
 app.add_middleware(
