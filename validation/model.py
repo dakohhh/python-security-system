@@ -1,5 +1,6 @@
 from typing import List, Union
 from fastapi import File, Form, UploadFile
+from jinja2 import pass_context
 from pydantic import BaseModel, validator
 from bson import ObjectId
 from email_validator import validate_email, EmailNotValidError
@@ -46,6 +47,24 @@ class CreateStudent:
         self.images = images
         self.matric_no = matric_no
 
+
+class CreateStaff:
+    
+    def __init__(
+        self,
+        firstname: str = Form(...),
+        lastname: str = Form(...),
+        staff_id: int = Form(...),
+        is_security_personnel: bool = Form(...),
+        phone_number: str= Form(...),
+        images: List[UploadFile] = File(...),
+    ):
+        self.firstname = firstname
+        self.lastname = lastname
+        self.images = images
+        self.staff_id = staff_id
+        self.is_security_personnel = is_security_personnel
+        self.phone_number= phone_number
 
 
 class CreateSecurityPersonnel:

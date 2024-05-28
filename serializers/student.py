@@ -4,18 +4,11 @@ import json
 from typing import List, Optional
 from datetime import datetime
 from bson import ObjectId
+from.university_member import UniversityMemberSerializer
 
 
-class StudentSerializer(BaseModel):
-    id: PydanticObjectId
-    firstname: str
-    lastname: str
+class StudentSerializer(UniversityMemberSerializer):
     matric_no: int
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        json_encoders = {datetime: lambda v: v.isoformat(), ObjectId: lambda v: str(v)}
 
 
 class AllStudentSerializer(BaseModel):

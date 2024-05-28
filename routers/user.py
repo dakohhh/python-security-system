@@ -1,8 +1,11 @@
+from multiprocessing import context
 import os
 import json
 
 import asyncio
+from turtle import st
 from typing import List
+from beanie import PydanticObjectId
 from fastapi import (
     Depends,
     File,
@@ -14,19 +17,24 @@ from fastapi import (
     status,
 )
 from fastapi.templating import Jinja2Templates
-from exceptions.custom_exception import BadRequestException
+from exceptions.custom_exception import BadRequestException, NotFoundException
 from repository.student import StudentRepository
+from repository.university_member import UniversityMemberRepository
 from repository.users import UsersRepository
 from repository.security import SecurityPersonnelRepository
+from repository.staff import StaffRepository
+from database.schema import Staff, SecurityPersonnel
 from authentication.bearer import get_current_user
 from utils.image import ProcessImages
 from serializers.student import AllStudentSerializer
+from serializers.staff import AllUniversityStaffSerializer
 from serializers.security_personnel import AllSecurityPersonnelSerializer
 
 from utils.notifications import notify_user_by_email, notify_users_by_phone
 from validation.model import (
     CreateStudent,
     NotifySchema,
+    CreateStaff,
     CreateUser,
     CreateSecurityPersonnel,
 )
@@ -112,6 +120,47 @@ async def create_student(
     )
 
 
+@router.post("/create/staff")
+async def create_staff(
+    request: Request,
+    staff: CreateStaff = Depends(),
+    admin: Users = Depends(auth.get_current_user),
+):
+
+    if await UniversityMemberRepository.does_staff_id_exists(staff.staff_id):
+        raise BadRequestException(f"staff id '{staff.staff_id}' already exists")
+
+    model_images = ProcessImages(staff.images)
+
+    model_images.validate()
+
+    if staff.is_security_personnel:
+
+        new_staff = asyncio.create_task(
+            SecurityPersonnelRepository.create_security_personnel(staff)
+        )
+
+    else:
+        new_staff = asyncio.create_task(StaffRepository.create_staff(staff))
+
+    if len(staff.images) != 9:
+        raise BadRequestException("must be exactly 9 images to be fitted")
+
+    new_staff = await new_staff
+
+    new_staff.encodings = model_images.get_face_encodings()
+
+    new_staff.save()
+
+    context = {"staff": new_staff.to_dict()}
+
+    return CustomResponse(
+        "created staff successfully",
+        status=status.HTTP_201_CREATED,
+        data=context,
+    )
+
+
 @router.post("/create/security_personnel")
 async def create_security_personnel(
     request: Request,
@@ -155,7 +204,7 @@ async def create_security_personnel(
 @router.get("/students")
 async def get_students(
     request: Request,
-    admin: Users = Depends(auth.get_current_user),
+    # admin: Users = Depends(auth.get_current_user),
 ):
 
     students = await StudentRepository.get_all_students_without_encodings()
@@ -169,22 +218,42 @@ async def get_students(
     )
 
 
-@router.get("/security_personnel")
-async def get_security_personnel(
+@router.get("/staff")
+async def get_all_university_staffs(
     request: Request,
-    admin: Users = Depends(auth.get_current_user),
+    # admin: Users = Depends(auth.get_current_user),
 ):
 
-    security_personnels = (
-        await SecurityPersonnelRepository.get_all_security_personnel_without_encoding()
-    )
+    university_staffs = await UniversityMemberRepository.all_university_staffs()
 
-    serialize_security_personnels = AllSecurityPersonnelSerializer(
-        security_personnels=list(security_personnels)
-    ).model_serialize
+    university_staffs = AllUniversityStaffSerializer(staffs=list(university_staffs))
+
+    context = {**university_staffs.model_dump()}
 
     return CustomResponse(
-        "created security personnel successfully",
+        "all univerisity staffs",
         status=status.HTTP_200_OK,
-        data=serialize_security_personnels,
+        data=context,
     )
+
+
+@router.delete("/staff/{staff_id}")
+async def delete_staff(request: Request, staff_id: PydanticObjectId):
+    if not await UniversityMemberRepository.does_staff_exists(staff_id):
+        raise NotFoundException("Staff does not exists")
+
+    staff = await UniversityMemberRepository.delete_staff(staff_id)
+
+    context = {}
+
+    return CustomResponse("Deleted Staff successfully", status=status.HTTP_200_OK)
+
+
+@router.delete("/student/{student_id}")
+async def delete_student(request: Request, student_id: PydanticObjectId):
+    if not await StudentRepository.does_student_exists(student_id):
+        raise NotFoundException("student does not exists")
+
+    await StudentRepository.delete_student(student_id)
+
+    return CustomResponse("Deleted Student successfully", status=status.HTTP_200_OK)

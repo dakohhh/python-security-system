@@ -2,7 +2,7 @@ import typing
 from database.schema import SecurityPersonnel
 from utils.interface import StudentHaveData
 from utils.validate import get_object_id
-from validation.model import CreateSecurityPersonnel
+from validation.model import CreateSecurityPersonnel, CreateStaff
 
 
 
@@ -14,7 +14,7 @@ class SecurityPersonnelRepository:
         return query is not None
 
     @staticmethod
-    async def create_security_personnel(security_personnel: CreateSecurityPersonnel) -> SecurityPersonnel:
+    async def create_security_personnel(security_personnel: CreateStaff) -> SecurityPersonnel:
         new_security_personnel = SecurityPersonnel(
             firstname=security_personnel.firstname,
             lastname=security_personnel.lastname,

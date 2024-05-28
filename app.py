@@ -32,7 +32,7 @@ else:
     connect(host=os.getenv("MONGODB_URL_ONLINE"), tls=True, tlsCAFile=CERTIFICATE)
 
 
-app = FastAPI()
+app = FastAPI(title="MTU Security API", version="1.0.0")
 
 
 origins = [

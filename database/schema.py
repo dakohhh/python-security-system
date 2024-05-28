@@ -76,13 +76,34 @@ class Student(UniversityMember):
         klass.update({"matric_no": self.matric_no})
 
         return klass
-
-
-class SecurityPersonnel(UniversityMember):
-
+    
+class UniversityStaff(UniversityMember):
     staff_id = IntField(required=True)
-
     phone_number = StringField(required=True)
+
+
+class Staff(UniversityStaff):
+
+    is_security_personnel = BooleanField(required=True, default=False)
+
+    def to_dict(self) -> dict:
+            
+            klass = super().to_dict()
+    
+            klass.update(
+                {
+                    "staff_id": self.staff_id,
+                    "phone_number": self.phone_number,
+                    "is_security_personnel": self.is_security_personnel,
+                }
+            )
+    
+            return klass
+
+    meta = {"strict": False}
+
+
+class SecurityPersonnel(UniversityStaff):
 
     is_security_personnel = BooleanField(required=True, default=True)
 
